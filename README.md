@@ -12,7 +12,8 @@ IM application, including server and front-end.
 4. 发送表情，图片，定位
 5. 机器人自动回复
 6. 在线离线显示
-7. 历史消息记录、查询
+7. 支持多点登录
+8. 支持消息漫游
 
 ## 框架简介
 
