@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": null,
-    "database": "egg-sequelize-example-dev",
+    "password": "278721524",
+    "database": "im-db",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }
