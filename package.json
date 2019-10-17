@@ -6,26 +6,6 @@
   "egg": {
     "declarations": true
   },
-  "dependencies": {
-    "egg": "^2.23.0",
-    "egg-scripts": "^2.11.0"
-  },
-  "devDependencies": {
-    "autod": "^3.1.0",
-    "autod-egg": "^1.1.0",
-    "egg-bin": "^4.13.0",
-    "egg-ci": "^1.13.0",
-    "egg-mock": "^3.23.2",
-    "egg-sequelize": "^5.2.0",
-    "egg-socket.io": "^4.1.6",
-    "eslint": "^5.13.0",
-    "eslint-config-egg": "^7.5.1",
-    "mysql2": "^1.7.0",
-    "sequelize-cli": "^5.5.1"
-  },
-  "engines": {
-    "node": ">=10.0.0"
-  },
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-im-server",
     "stop": "egg-scripts stop --title=egg-server-im-server",
@@ -36,7 +16,43 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "cz": "git-cz"
+  },
+  "dependencies": {
+    "egg": "^2.23.0",
+    "egg-scripts": "^2.11.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "autod": "^3.1.0",
+    "autod-egg": "^1.1.0",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.0.2",
+    "egg-bin": "^4.13.0",
+    "egg-ci": "^1.13.0",
+    "egg-mock": "^3.23.2",
+    "egg-sequelize": "^5.2.0",
+    "egg-socket.io": "^4.1.6",
+    "eslint": "^5.13.0",
+    "eslint-config-egg": "^7.5.1",
+    "husky": "^3.0.9",
+    "mysql2": "^1.7.0",
+    "sequelize-cli": "^5.5.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
+    }
+  },
+  "engines": {
+    "node": ">=10.0.0"
   },
   "ci": {
     "version": "10"
