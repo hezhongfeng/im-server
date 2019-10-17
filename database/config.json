@@ -1,8 +1,15 @@
 {
   "development": {
     "username": "root",
-    "password": "278721524",
+    "password": null,
     "database": "im-db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "im-production",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }
