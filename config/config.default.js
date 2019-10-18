@@ -29,7 +29,7 @@ module.exports = appInfo => {
     port: 3306,
     database: 'im-db',
     username: 'root',
-    password: null,
+    password: 'root',
   };
 
   return {
