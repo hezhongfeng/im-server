@@ -6,10 +6,10 @@ IM application, including server and front-end.
 总结下在IM这块的落地实践，使用`socket.io`作为IM的核心部分，不掺杂公司业务的IM通信示例，包含前后端，`Vue`和`React`都有实现。
 
 ## 功能简介
-1. 用户注册，登录
+1. 用户注册，登录，个人信息编辑
 2. 个人、群组聊天
 3. 聊天名单记录
-4. 发送表情，图片，定位
+4. 表情，图片，定位
 5. 机器人自动回复
 6. 在线离线显示
 7. 支持多点登录
@@ -18,10 +18,10 @@ IM application, including server and front-end.
 ## 框架简介
 
 ### server
-
 选用阿里的egg做支撑，看中的原因有他们内部大规模的落地和安全方面做得比较好。
 
 ### front-end
 我本身对`Vue`是比较熟悉了，最近想使用下`React`感受下不同的设计思路，所以准备先使用`Vue`实现出所有功能，然后再使用`React`实现一次。
 
 ### 部署
+docker
