@@ -3,5 +3,5 @@ module.exports = app => {
 
   require('./router/login')(app);
 
-  router.get('/', controller.home.index);
+  router.get('/', controller.v1.home.index);
 };
