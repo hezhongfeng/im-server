@@ -5,7 +5,7 @@ class LoginController extends Controller {
     const { ctx, service } = this;
     const req = Object.assign(ctx.request.body);
     // 调用 Service 进行业务处理
-    service.post.create(req);
+    service.login.create(req);
   }
 }
 
