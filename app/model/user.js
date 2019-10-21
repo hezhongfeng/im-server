@@ -10,5 +10,9 @@ module.exports = app => {
     },
   });
 
+  User.associate = function() {
+    app.model.User.belongsTo(app.model.Authorization);
+  };
+
   return User;
 };
