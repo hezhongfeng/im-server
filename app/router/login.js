@@ -6,6 +6,10 @@ module.exports = app => {
   router.get('/login', controller.home.login);
   // 登录校验
   router.post('/login', app.passport.authenticate('local', { successRedirect: '/authCallback' }));
+  // signup
+  // router.get('/signup', controller.home.login);
+  router.post('/signup', controller.v1.user.signup);
+  // router.resources('users', '/api/v1/users', controller.v1.users);
 
   // github登录授权
   const github = app.passport.authenticate('github', {});

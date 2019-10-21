@@ -20,7 +20,7 @@ module.exports = async (ctx, user, done) => {
       if (!auth) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (!auth.validPassword(password)) {
+      if (auth.password !== password) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       const existsUser = await ctx.model.User.findOne({ id: auth.user_id });
