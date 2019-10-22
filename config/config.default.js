@@ -19,8 +19,8 @@ module.exports = appInfo => {
   config.middleware = [];
 
   // add your user config here
-  const userConfig = {
-    secret: 'egg'
+  config.userConfig = {
+    secret: 'im-server'
   };
 
   config.sequelize = {
@@ -44,7 +44,6 @@ module.exports = appInfo => {
   // };
 
   return {
-    ...config,
-    ...userConfig
+    ...config
   };
 };
