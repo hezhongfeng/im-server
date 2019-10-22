@@ -1,18 +1,14 @@
 module.exports = app => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING } = app.Sequelize;
 
   const User = app.model.define('user', {
     nickname: {
-      type: STRING,
+      type: STRING
     },
     photo: {
-      type: STRING,
-    },
+      type: STRING
+    }
   });
-
-  User.associate = function() {
-    app.model.User.belongsTo(app.model.Authorization);
-  };
 
   return User;
 };

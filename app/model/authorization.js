@@ -1,17 +1,16 @@
 module.exports = app => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING } = app.Sequelize;
 
   const Authorization = app.model.define('authorization', {
     provider: { type: STRING },
     uid: { type: STRING },
     username: { type: STRING, unique: true },
-    password: { type: STRING },
+    password: { type: STRING }
   });
 
-  Authorization.validPassword = async function(username, password) {
-    return await this.findOne({
-      where: { password, password },
-    });
+  // One-To-One associations
+  Authorization.associate = function() {
+    app.model.Authorization.hasOne(app.model.User);
   };
 
   return Authorization;
