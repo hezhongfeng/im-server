@@ -37,12 +37,10 @@
     "egg-ci": "^1.13.0",
     "egg-mock": "^3.23.2",
     "egg-passport": "^2.1.0",
-    "egg-passport-github": "^1.0.0",
     "egg-validate": "^2.0.2",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.5.1",
     "husky": "^3.0.9",
-    "passport-local": "^1.0.0",
     "sequelize-cli": "^5.5.1"
   },
   "config": {
