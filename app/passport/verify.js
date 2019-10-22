@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 module.exports = async (ctx, user) => {
-  const { provider, id, name } = user;
+  const { provider, id, name, photo } = user;
   assert(provider, 'user.provider should exists');
   if (provider === 'github') {
     auth = await ctx.model.Authorization.findOne({
@@ -17,7 +17,8 @@ module.exports = async (ctx, user) => {
         username: name
       });
       const user = await ctx.model.User.create({
-        nickname: name
+        nickname: name,
+        photo
       });
       newAuth.setUser(user);
       ctx.session.auth = newAuth;
