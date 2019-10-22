@@ -8,14 +8,14 @@ module.exports = async (ctx, user, done) => {
     assert(id, 'user.id should exists');
   }
   const auth = null;
-  const existsUser = null;
+  // const existsUser = null;
   if (provider === 'local') {
     try {
       auth = await ctx.model.authorization.findOne({
         where: {
           provider,
-          username,
-        },
+          username
+        }
       });
       if (!auth) {
         return done(null, false, { message: 'Incorrect username.' });

@@ -4,7 +4,7 @@ const verify = require('./app/passport/verify');
 module.exports = app => {
   // 初始化Table
   app.beforeStart(async () => {
-    await app.model.sync({ force: true });
+    await app.model.sync();
   });
 
   // 挂载 passport

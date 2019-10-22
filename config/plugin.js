@@ -2,22 +2,22 @@
 
 exports.io = {
   enable: true,
-  package: 'egg-socket.io',
+  package: 'egg-socket.io'
 };
 
 exports.sequelize = {
   enable: true,
-  package: 'egg-sequelize',
+  package: 'egg-sequelize'
 };
 
 exports.validate = {
   enable: true,
-  package: 'egg-validate',
+  package: 'egg-validate'
 };
 
-module.exports.passport = {
+exports.passport = {
   enable: true,
-  package: 'egg-passport',
+  package: 'egg-passport'
 };
 
 // module.exports.passportGithub = {

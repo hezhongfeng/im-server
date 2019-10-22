@@ -6,13 +6,13 @@ module.exports = app => {
   app.passport.use(
     new LocalStrategy(
       {
-        passReqToCallback: true,
+        passReqToCallback: true
       },
       (req, username, password, done) => {
         const user = {
           provider: 'local',
           username,
-          password,
+          password
         };
         app.passport.doVerify(req, user, done);
       }

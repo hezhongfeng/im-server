@@ -20,7 +20,7 @@ module.exports = appInfo => {
 
   // add your user config here
   const userConfig = {
-    // myAppName: 'egg',
+    secret: 'egg'
   };
 
   config.sequelize = {
@@ -29,13 +29,13 @@ module.exports = appInfo => {
     port: 3306,
     database: 'im-db',
     username: 'root',
-    password: 'root',
+    password: 'root'
   };
 
   exports.security = {
     csrf: {
-      enable: false,
-    },
+      enable: false
+    }
   };
 
   // config.passportGithub = {
@@ -45,6 +45,6 @@ module.exports = appInfo => {
 
   return {
     ...config,
-    ...userConfig,
+    ...userConfig
   };
 };
