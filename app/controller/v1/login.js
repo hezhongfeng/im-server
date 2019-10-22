@@ -13,13 +13,25 @@ class LoginController extends Controller {
   }
 
   async login() {
+    const { service, ctx } = this;
     const { username, password } = ctx.request.body;
-
-    await this.service.login.login({
+    await service.login.login({
       provider: 'local',
       username,
       password
     });
+  }
+
+  async passport() {
+    const { service, ctx } = this;
+    console.log('ctx.request', ctx.request);
+    ctx.body = {};
+    // const { provider, password } = ctx.request.body;
+    // await service.login.login({
+    //   provider: 'github',
+    //   username,
+    //   password
+    // });
   }
 }
 

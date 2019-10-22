@@ -20,6 +20,42 @@ IM application, including server and front-end.
 ### server
 选用阿里的egg做支撑，看中的原因有他们内部大规模的落地和安全方面做得比较好。
 
+#### passport
+这个章节的官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用passport，使用的就是普用的controller控制的。
+
+下面详细说下使用第三方平台（我选用的是GitHub）登录的过程：
+1. 在[GitHub OAuth Apps](https://github.com/settings/applications/new)新建你的应用
+1. 在项目安装egg-passport和egg-passport-github
+2. 开启插件：
+```
+// config/plugin.js
+module.exports.passport = {
+  enable: true,
+  package: 'egg-passport',
+};
+
+module.exports.passportGithub = {
+  enable: true,
+  package: 'egg-passport-github',
+};
+```
+3. 配置：
+```
+// config/default.js
+config.passportGithub = {
+  key: 'your_clientID',
+  secret: 'your_clientSecret',
+  callbackURL: '/v1/passport/github/callback' // 注意这里非常的关键，这里需要和你在github上面设置的Authorization callback URL一致，我开发的时候想换github上面设置的Authorization callback URL一直报错，后来发现需要在这里配置
+};
+```
+4. 需要设置两个passport的get请求路由，第一个是我们在login页面点击的请求，第二个是我们在上一步设置的callbackURL，这里主要是第三方平台会给我们一个可用的code，然后根据OAuth2授权规则去获取用户的详细信息
+```
+const github = app.passport.authenticate('github', { successRedirect: '/v1/passport' });// successRedirect就是最后校验完毕后前端会跳转的路由
+router.get('/v1/passport/github', github);
+router.get('/v1/passport/github/callback', github);
+```
+5. 获取到详细信息后，我们需要在app.js里面的app.passport.verify去验证用户信息，并且和我们自身平台的用户信息做关联，也要授权给session
+
 ### front-end
 我本身对`Vue`是比较熟悉了，最近想使用下`React`感受下不同的设计思路，所以准备先使用`Vue`实现出所有功能，然后再使用`React`实现一次。
 

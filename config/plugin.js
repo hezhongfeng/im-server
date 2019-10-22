@@ -15,12 +15,17 @@ exports.validate = {
   package: 'egg-validate'
 };
 
-exports.passport = {
+exports.session = {
+  key: 'IM_SESS',
+  maxAge: 1 * 3600 * 1000
+};
+
+module.exports.passport = {
   enable: true,
   package: 'egg-passport'
 };
 
-// module.exports.passportGithub = {
-//   enable: true,
-//   package: 'egg-passport-github',
-// };
+module.exports.passportGithub = {
+  enable: true,
+  package: 'egg-passport-github'
+};

@@ -62,6 +62,7 @@ class LoginService extends Service {
         };
         return;
       }
+      ctx.session.auth = auth;
       ctx.body = {
         errcode: 0,
         errmsg: null,

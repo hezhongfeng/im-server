@@ -1,4 +1,3 @@
-const LocalPassport = require('./app/passport/local');
 const verify = require('./app/passport/verify');
 
 module.exports = app => {
@@ -7,9 +6,6 @@ module.exports = app => {
     await app.model.sync();
   });
 
-  // 挂载 passport
-  LocalPassport(app);
-
-  // 校验用户信息
+  // passport鉴权
   app.passport.verify(verify);
 };
