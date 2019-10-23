@@ -93,5 +93,70 @@ module.exports = async (ctx, user) => {
 };
 ```
 
+### 消息
+message的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做如下说明：
+```
+const Message = app.model.define('message', {
+  /**
+    * 消息类型：
+    * 0:单聊
+    * 1:群聊
+    */
+  type: {
+    type: STRING
+  },
+  // 消息体
+  body: {
+    type: JSON
+  },
+  fromId: { type: INTEGER },
+  toId: { type: INTEGER }
+});
+```
+body里面存放的是消息体，使用json用来存放不同的消息格式：
+
+```
+// 文本消息
+{
+  "type": "txt",
+  "msg":"哈哈哈" //消息内容
+}
+```
+
+```
+// 图片消息
+{
+  "type": "img",
+  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
+  "ext":"jpg",
+  "w":360,    //宽
+  "h":480,    //高
+  "size": 388245
+}
+```
+
+```
+// 视频消息
+{
+  "type": 'video',
+  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
+  "ext":"mp4",
+  "w":360,    //宽
+  "h":480,    //高
+  "size": 388245
+}
+```
+
+```
+// 地理位置消息
+{
+  "type": "loc",
+  "title":"中国 浙江省 杭州市 网商路 599号",    //地理位置title
+  "lng":120.1908686708565,        // 经度
+  "lat":30.18704515647036            // 纬度
+}
+```
+
+
 ## 部署
 docker
