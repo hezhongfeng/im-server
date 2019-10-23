@@ -23,6 +23,15 @@ module.exports = appInfo => {
     secret: 'im-server'
   };
 
+  exports.io = {
+    namespace: {
+      '/': {
+        connectionMiddleware: [ 'auth' ],
+        packetMiddleware: [ 'packet' ]
+      }
+    }
+  };
+
   config.sequelize = {
     dialect: 'mysql',
     host: '127.0.0.1',
