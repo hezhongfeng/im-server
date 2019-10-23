@@ -2,6 +2,8 @@
 
 'use strict';
 
+const path = require('path');
+
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -23,7 +25,7 @@ module.exports = appInfo => {
     secret: 'im-server'
   };
 
-  exports.io = {
+  config.io = {
     namespace: {
       '/': {
         connectionMiddleware: [ 'auth' ],
@@ -41,7 +43,7 @@ module.exports = appInfo => {
     password: 'root'
   };
 
-  exports.security = {
+  config.security = {
     csrf: {
       enable: false
     }
@@ -51,6 +53,11 @@ module.exports = appInfo => {
     key: '6a295fd08ea8affe1e75',
     secret: '14b892e4f36cf08303f40553bc24fcbae61aa4bb',
     callbackURL: '/v1/passport/github/callback'
+  };
+
+  config.logger = {
+    dir: path.join(appInfo.baseDir, 'logs', appInfo.name),
+    consoleLevel: 'DEBUG'
   };
 
   return {
