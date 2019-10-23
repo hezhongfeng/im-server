@@ -2,8 +2,7 @@
 IM application, including server and front-end.
 
 ## 介绍
-
-总结下在IM这块的落地实践，使用`socket.io`作为IM的核心部分，不掺杂公司业务的IM通信示例，包含前后端，`Vue`和`React`都有实现。
+总结下在IM这块的落地实践，使用`socket.io`作为IM的核心部分，不掺杂公司业务的IM通信示例，包含前后端，前端部分`Vue`和`React`都有实现。
 
 ## 功能简介
 1. 用户注册，登录，个人信息编辑
@@ -18,9 +17,14 @@ IM application, including server and front-end.
 ## 框架简介
 
 ### server
-选用阿里的egg做支撑，看中的原因有他们内部大规模的落地和安全方面做得比较好。
+选用阿里的egg框架做支撑，看中的原因是他们内部大规模的落地和安全方面做得比较好。
 
-#### passport
+### front-end
+我本身对`Vue`是比较熟悉的了，最近想使用下`React`感受下不同的设计思路，所以准备先使用`Vue`实现出所有功能，然后再使用`React`实现一次。
+
+## server端详细说明
+
+### passport
 这个章节的官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用passport，使用的就是普用的controller控制的。
 
 下面详细说下使用第三方平台（我选用的是GitHub）登录的过程：
@@ -89,8 +93,5 @@ module.exports = async (ctx, user) => {
 };
 ```
 
-### front-end
-我本身对`Vue`是比较熟悉了，最近想使用下`React`感受下不同的设计思路，所以准备先使用`Vue`实现出所有功能，然后再使用`React`实现一次。
-
-### 部署
+## 部署
 docker
