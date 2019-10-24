@@ -4,8 +4,8 @@ const crypto = require('crypto');
 class LoginService extends Service {
   async create({ provider, username, password }) {
     const { ctx, config } = this;
-    const auth = await ctx.model.Authorization.findOne({ where: { provider, username } });
-    if (auth) {
+    const user = await ctx.model.User.findOne({ where: { provider, username } });
+    if (user) {
       ctx.body = {
         errcode: '1', // 具体错误代码
         errmsg: '用户名重复'
@@ -14,7 +14,7 @@ class LoginService extends Service {
     }
     const secret = config.userConfig.secret;
     try {
-      const auth = await ctx.model.Authorization.create({
+      const user = await ctx.model.User.create({
         provider,
         username,
         password: crypto
@@ -22,14 +22,14 @@ class LoginService extends Service {
           .update(password)
           .digest('hex')
       });
-      const user = await ctx.model.User.create({
+      const userInfo = await ctx.model.UserInfo.create({
         nickname: username
       });
-      auth.setUser(user);
+      user.setUser(userInfo);
       ctx.body = {
         errcode: 0,
         errmsg: null,
-        data: { id: auth.id }
+        data: { id: user.id }
       };
     } catch (error) {
       console.warn('error', error);
@@ -41,8 +41,8 @@ class LoginService extends Service {
 
     if (provider === 'local') {
       const secret = config.userConfig.secret;
-      const auth = await ctx.model.Authorization.findOne({ where: { provider, username } });
-      if (!auth) {
+      const user = await ctx.model.User.findOne({ where: { provider, username } });
+      if (!user) {
         ctx.body = {
           errcode: '1',
           errmsg: '用户名错误'
@@ -50,7 +50,7 @@ class LoginService extends Service {
         return;
       }
       if (
-        auth.password !==
+        user.password !==
         crypto
           .createHmac('sha256', secret)
           .update(password)
@@ -62,11 +62,11 @@ class LoginService extends Service {
         };
         return;
       }
-      ctx.session.auth = auth;
+      ctx.session.user = user;
       ctx.body = {
         errcode: 0,
         errmsg: null,
-        data: { id: auth.id }
+        data: { id: user.id }
       };
     }
   }

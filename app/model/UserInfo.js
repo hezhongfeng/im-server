@@ -1,8 +1,8 @@
 module.exports = app => {
   const { STRING } = app.Sequelize;
 
-  const RoleRight = app.model.define('roleright', {
-    name: {
+  const UserInfo = app.model.define('userInfo', {
+    nickname: {
       type: STRING
     },
     photo: {
@@ -10,5 +10,5 @@ module.exports = app => {
     }
   });
 
-  return RoleRight;
+  return UserInfo;
 };

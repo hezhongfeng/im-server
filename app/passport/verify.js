@@ -4,26 +4,26 @@ module.exports = async (ctx, user) => {
   const { provider, id, name, photo } = user;
   assert(provider, 'user.provider should exists');
   if (provider === 'github') {
-    const auth = await ctx.model.Authorization.findOne({
+    const user = await ctx.model.User.findOne({
       where: {
         provider,
         uid: id
       }
     });
-    if (!auth) {
-      const newAuth = await ctx.model.Authorization.create({
+    if (!user) {
+      const newUser = await ctx.model.User.create({
         provider,
         uid: id,
         username: name
       });
-      const user = await ctx.model.User.create({
+      const userInfo = await ctx.model.UserInfo.create({
         nickname: name,
         photo
       });
-      newAuth.setUser(user);
-      ctx.session.auth = newAuth;
+      newUser.setUserInfo(userInfo);
+      ctx.session.user = newUser;
     } else {
-      ctx.session.auth = auth;
+      ctx.session.user = user;
     }
   }
   return user;

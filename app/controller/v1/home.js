@@ -5,7 +5,7 @@ const Controller = require('egg').Controller;
 class HomeController extends Controller {
   async index() {
     const { ctx } = this;
-    ctx.body = `hi, 欢迎${ctx.session.auth ? ctx.session.auth.username : '来访'}`;
+    ctx.body = `hi, 欢迎${ctx.session.user ? ctx.session.user.username : '来访'}`;
   }
 }
 
