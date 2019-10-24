@@ -60,6 +60,13 @@ module.exports = appInfo => {
     consoleLevel: 'DEBUG'
   };
 
+  exports.cancan = {
+    // method name of current logined user instance
+    contextUserMethod: 'auth',
+    // Enable disable Ability check result cache
+    cache: true
+  };
+
   return {
     ...config
   };

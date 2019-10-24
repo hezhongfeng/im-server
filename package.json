@@ -21,10 +21,16 @@
   },
   "dependencies": {
     "egg": "^2.23.0",
+    "egg-bin": "^4.14.0",
+    "egg-cancan": "^0.6.0",
+    "egg-passport": "^2.1.0",
+    "egg-passport-github": "^1.0.0",
     "egg-scripts": "^2.11.0",
     "egg-sequelize": "^5.2.0",
     "egg-socket.io": "^4.1.6",
-    "mysql2": "^1.7.0"
+    "egg-validate": "^2.0.2",
+    "mysql2": "^1.7.0",
+    "passport": "^0.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
@@ -33,17 +39,11 @@
     "autod-egg": "^1.1.0",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
-    "egg-bin": "^4.13.0",
     "egg-ci": "^1.13.0",
     "egg-mock": "^3.23.2",
-    "egg-passport": "^2.1.0",
-    "egg-passport-github": "^1.0.0",
-    "egg-validate": "^2.0.2",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.5.1",
-    "husky": "^3.0.9",
-    "passport": "^0.4.0",
-    "sequelize-cli": "^5.5.1"
+    "husky": "^3.0.9"
   },
   "config": {
     "commitizen": {
