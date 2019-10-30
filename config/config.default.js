@@ -25,6 +25,24 @@ module.exports = appInfo => {
     secret: 'im-server'
   };
 
+  // config.view = {
+  //   mapping: {
+  //     '.html': 'nunjucks'
+  //   }
+  // };
+
+  // config.assets = {
+  //   publicPath: '/public/',
+  //   devServer: {
+  //     enable: false
+  //   }
+  // };
+
+  exports.static = {
+    // maxAge: 31536000,
+    prefix: '/admin/'
+  };
+
   config.io = {
     namespace: {
       '/': {
