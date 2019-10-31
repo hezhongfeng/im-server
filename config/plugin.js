@@ -32,5 +32,5 @@ module.exports.passportGithub = {
 
 exports.cancan = {
   enable: true,
-  package: 'egg-cancan',
+  package: 'egg-cancan'
 };
