@@ -3,7 +3,8 @@ module.exports = app => {
 
   const Group = app.model.define('group', {
     name: {
-      type: STRING
+      type: STRING,
+      unique: true
     },
     photo: {
       type: STRING

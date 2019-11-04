@@ -3,10 +3,12 @@ module.exports = app => {
 
   const Role = app.model.define('role', {
     name: {
-      type: STRING
+      type: STRING,
+      unique: true
     },
     keyName: {
-      type: STRING
+      type: STRING,
+      unique: true
     },
     desc: {
       type: STRING

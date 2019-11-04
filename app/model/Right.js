@@ -2,11 +2,13 @@ module.exports = app => {
   const { STRING } = app.Sequelize;
 
   const Right = app.model.define('right', {
-    nickname: {
-      type: STRING
+    name: {
+      type: STRING,
+      unique: true
     },
     keyName: {
-      type: STRING
+      type: STRING,
+      unique: true
     },
     desc: {
       type: STRING
