@@ -1,17 +1,6 @@
-/* eslint valid-jsdoc: "off" */
-
-'use strict';
-
 const path = require('path');
 
-/**
- * @param {Egg.EggAppInfo} appInfo app info
- */
 module.exports = appInfo => {
-  /**
-   * built-in config
-   * @type {Egg.EggAppConfig}
-   **/
   const config = (exports = {});
 
   // use for cookie sign key, should change to your own and keep security
@@ -23,24 +12,6 @@ module.exports = appInfo => {
   // add your user config here
   config.userConfig = {
     secret: 'im-server'
-  };
-
-  // config.view = {
-  //   mapping: {
-  //     '.html': 'nunjucks'
-  //   }
-  // };
-
-  // config.assets = {
-  //   publicPath: '/public/',
-  //   devServer: {
-  //     enable: false
-  //   }
-  // };
-
-  exports.static = {
-    // maxAge: 31536000,
-    prefix: '/admin/'
   };
 
   config.io = {
