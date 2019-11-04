@@ -53,7 +53,7 @@ module.exports = appInfo => {
   };
 
   config.sequelize = {
-    timezone: '+8:00',
+    timezone: '+08:00',
     dialect: 'mysql',
     host: '127.0.0.1',
     port: 3306,

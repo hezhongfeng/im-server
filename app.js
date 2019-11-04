@@ -47,7 +47,7 @@ class AppBootHook {
     // 例如：从数据库加载数据到内存缓存
     // this.app.cacheData = await this.app.model.query(QUERY_CACHE_SQL);
     console.log('willReady');
-    await this.app.model.sync();
+    await this.app.model.sync({ alter: true });
     // passport鉴权
     this.app.passport.verify(verify);
   }
@@ -55,7 +55,7 @@ class AppBootHook {
   async didReady() {
     // 应用已经启动完毕
     const ctx = await this.app.createAnonymousContext();
-    await ctx.service.startup.checkAdmin();
+    await ctx.service.startup.start();
   }
 
   async serverDidReady() {
