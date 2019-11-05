@@ -16,11 +16,16 @@ class startupService extends Service {
     group = await this.addGroup('小绵羊');
     group.addUser(user);
     role = await this.addRole('管理员', 'admin');
+    right = await this.addRight('管理', 'admin');
+    role.addRight(right);
+    admin.addRole(role);
+
+    role = await this.addRole('用户', 'user');
     right = await this.addRight('登录', 'login');
     role.addRight(right);
     right = await this.addRight('发言', 'speak');
     role.addRight(right);
-    admin.addRole(role);
+    user.addRole(role);
   }
 
   async addUser(username, password) {
