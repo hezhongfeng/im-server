@@ -11,9 +11,9 @@ class startupService extends Service {
 
     admin = await this.addUser('admin', 'admin');
     user = await this.addUser('user', 'user');
-    group = await this.addGroup('群魔乱舞');
+    group = await this.addGroup('群魔乱舞', false);
     group.addUser(user);
-    group = await this.addGroup('小绵羊');
+    group = await this.addGroup('小绵羊', false);
     group.addUser(user);
     role = await this.addRole('管理员', 'admin');
     right = await this.addRight('管理', 'admin');
@@ -50,7 +50,7 @@ class startupService extends Service {
     return user;
   }
 
-  async addGroup(name, photo = '') {
+  async addGroup(name, disabled, photo = '') {
     const { ctx } = this;
     let group = await ctx.model.Group.findOne({ where: { name } });
     if (group) {
@@ -58,7 +58,8 @@ class startupService extends Service {
     }
     group = await ctx.model.Group.create({
       name,
-      photo
+      photo,
+      disabled
     });
 
     return group;
