@@ -1,5 +1,5 @@
 module.exports = app => {
-  const { STRING } = app.Sequelize;
+  const { STRING, BOOLEAN } = app.Sequelize;
 
   const Group = app.model.define('group', {
     name: {
@@ -8,6 +8,9 @@ module.exports = app => {
     },
     photo: {
       type: STRING
+    },
+    disabled: {
+      type: BOOLEAN
     }
   });
 
