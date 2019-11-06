@@ -37,7 +37,7 @@ class LoginService extends Service {
   }
 
   async login({ provider, username, password }) {
-    const { ctx, config } = this;
+    const { ctx, config, service } = this;
 
     if (provider === 'local') {
       const secret = config.userConfig.secret;
