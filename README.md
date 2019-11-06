@@ -94,6 +94,19 @@ module.exports = async (ctx, user) => {
 };
 ```
 
+### 统一鉴权
+
+因为本系统有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
+
+比如管理端的路由`/v1/admin/...`，想在这个系列路由全都添加管理员的鉴权，这时候可以用中间件的方式进行鉴权，各种具体的细分权限可以在controller层完成，下面是在router 中使用中间件的例子
+
+```
+module.exports = app => {
+  const gzip = app.middleware.gzip({ threshold: 1024 });
+  app.router.get('/needgzip', gzip, app.controller.handler);
+};
+```
+
 ### 消息
 message的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做如下说明：
 ```
