@@ -1,8 +1,4 @@
 module.exports = app => {
-  // const { router, controller } = app;
-
-  require('./router/login')(app);
-  require('./router/io')(app);
-
-  // router.get('/admin', controller.v1.home.index);
+  require('./router/v1/amdin/login')(app);
+  require('./router/v1/amdin/io')(app);
 };
