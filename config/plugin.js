@@ -20,17 +20,12 @@ exports.session = {
   maxAge: 1 * 3600 * 1000
 };
 
-module.exports.passport = {
+exports.passport = {
   enable: true,
   package: 'egg-passport'
 };
 
-module.exports.passportGithub = {
+exports.passportGithub = {
   enable: true,
   package: 'egg-passport-github'
-};
-
-exports.cancan = {
-  enable: true,
-  package: 'egg-cancan'
 };
