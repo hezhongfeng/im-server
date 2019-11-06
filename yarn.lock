@@ -3035,11 +3035,6 @@ egg-bin@^4.14.0:
     ts-node "^7"
     ypkgfiles "^1.6.0"
 
-egg-cancan@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/egg-cancan/-/egg-cancan-0.6.0.tgz#52ac3d0097233c067a894d9c484a3a65e6bcd50c"
-  integrity sha512-jWD6fIWUUJIrX2d+jfOzN+/9QnanbZ7uwaetKXvMr0Gkz25XQXaQmXEYJM+G+XHqyg5KY9ogoo6O+EH/0HgeSg==
-
 egg-ci@^1.13.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/egg-ci/-/egg-ci-1.13.0.tgz#815ce71f7657fa991ff976ca72790e1fb60689c8"
@@ -6697,14 +6692,6 @@ passport@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/passport/-/passport-0.3.2.tgz#9dd009f915e8fe095b0124a01b8f82da07510102"
   integrity sha1-ndAJ+RXo/glbASSgG4+C2gdRAQI=
-  dependencies:
-    passport-strategy "1.x.x"
-    pause "0.0.1"
-
-passport@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/passport/-/passport-0.4.0.tgz#c5095691347bd5ad3b5e180238c3914d16f05811"
-  integrity sha1-xQlWkTR71a07XhgCOMORTRbwWBE=
   dependencies:
     passport-strategy "1.x.x"
     pause "0.0.1"
