@@ -4,7 +4,7 @@ class UserInfoController extends Controller {
   // GET
   async show() {
     const { ctx } = this;
-    const userInfo = ctx.model.User.findByPk(ctx.params.id).getUserInfo;
+    const userInfo = ctx.model.User.findByPk(ctx.params.id).getUserInfo();
     ctx.body = {
       errcode: 0,
       errmsg: null,
