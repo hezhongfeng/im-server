@@ -63,10 +63,11 @@ class LoginService extends Service {
         return;
       }
       ctx.session.user = user;
+      const object = await service.user.getUserAttribute();
       ctx.body = {
         errcode: 0,
         errmsg: null,
-        data: { id: user.id }
+        data: Object.assign(object, { id: user.id })
       };
     }
   }
