@@ -44,7 +44,7 @@ class LoginController extends Controller {
     try {
       const createRule = {
         username: { type: 'string', min: 4 },
-        password: { type: 'string', min: 5 }
+        password: { type: 'string', min: 4 }
       };
       ctx.validate(createRule, params);
     } catch (error) {

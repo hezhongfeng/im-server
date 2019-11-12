@@ -3,12 +3,30 @@ const Service = require('egg').Service;
 class userService extends Service {
   async getUserAttribute() {
     const { ctx } = this;
-    const user = ctx.model.User.findByPk(ctx.session.user.id);
-    const userInfo = user.getUserInfo();
-    const roles = user.getRoles();
+    const user =  await ctx.model.User.findByPk(ctx.session.user.id);
+    const userInfo = await user.getUserInfo();
+    const roles = await user.getRoles().map(item => {
+      delete item.user_role;
+      return item;
+    });
     const rights = [];
     for (const role of roles) {
-      rights.concat(role.getRights());
+      const tempRights = await role.getRights();
+      rights.concat(tempRights);
+      for (const right of tempRights) {
+        if (!rights.some(item => item.id === right.id)) {
+          delete right.role_role;
+          right.get({
+            plain: true
+          });
+          rights.push(right);
+        }
+      }
+    }
+    for (const role of roles) {
+      role.get({
+        plain: true
+      });
     }
     return {
       userInfo,
