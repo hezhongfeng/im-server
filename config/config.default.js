@@ -17,20 +17,20 @@ module.exports = appInfo => {
   config.io = {
     namespace: {
       '/': {
-        connectionMiddleware: [ 'auth' ],
-        packetMiddleware: [ 'packet' ]
+        connectionMiddleware: ['auth'],
+        packetMiddleware: ['packet']
       }
     }
   };
 
   config.sequelize = {
-    timezone: "+08:00",
-    dialect: "mysql",
-    host: "127.0.0.1",
+    timezone: '+08:00',
+    dialect: 'mysql',
+    host: '127.0.0.1',
     port: 3306,
-    database: "im-db",
-    username: "root",
-    password: "root",
+    database: 'im-db',
+    username: 'root',
+    password: 'root',
     dialectOptions: {
       dateStrings: true,
       typeCast: true
