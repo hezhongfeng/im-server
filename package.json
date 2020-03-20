@@ -20,15 +20,16 @@
     "cz": "git-cz"
   },
   "dependencies": {
-    "egg": "^2.23.0",
-    "egg-bin": "^4.14.0",
+    "egg": "^2.26.0",
+    "egg-bin": "^4.14.1",
     "egg-passport": "^2.1.0",
     "egg-passport-github": "^1.0.0",
+    "egg-redis": "^2.4.0",
     "egg-scripts": "^2.11.0",
-    "egg-sequelize": "^5.2.0",
+    "egg-sequelize": "^5.2.1",
     "egg-socket.io": "^4.1.6",
     "egg-validate": "^2.0.2",
-    "mysql2": "^1.7.0"
+    "mysql2": "^2.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
