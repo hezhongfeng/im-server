@@ -1,12 +1,26 @@
 module.exports = app => {
   const { STRING } = app.Sequelize;
 
-  const User = app.model.define('user', {
-    provider: { type: STRING },
-    uid: { type: STRING },
-    username: { type: STRING, unique: true },
-    password: { type: STRING }
-  });
+  const User = app.model.define(
+    'user',
+    {
+      provider: {
+        type: STRING
+      },
+      uid: {
+        type: STRING
+      },
+      username: {
+        type: STRING
+      },
+      password: {
+        type: STRING
+      }
+    },
+    {
+      indexes: [{ unique: true, fields: ['username'] }]
+    }
+  );
 
   User.associate = function() {
     // One-To-One associations

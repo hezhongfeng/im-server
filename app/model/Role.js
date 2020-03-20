@@ -1,19 +1,26 @@
 module.exports = app => {
   const { STRING } = app.Sequelize;
 
-  const Role = app.model.define('role', {
-    name: {
-      type: STRING,
-      unique: true
+  const Role = app.model.define(
+    'role',
+    {
+      name: {
+        type: STRING
+      },
+      keyName: {
+        type: STRING
+      },
+      desc: {
+        type: STRING
+      }
     },
-    keyName: {
-      type: STRING,
-      unique: true
-    },
-    desc: {
-      type: STRING
+    {
+      indexes: [
+        { unique: true, fields: ['name'] },
+        { unique: true, fields: ['key_name'] }
+      ]
     }
-  });
+  );
 
   Role.associate = function() {
     // Many-To-Many associations

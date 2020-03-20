@@ -1,19 +1,26 @@
 module.exports = app => {
   const { STRING } = app.Sequelize;
 
-  const Right = app.model.define('right', {
-    name: {
-      type: STRING,
-      unique: true
+  const Right = app.model.define(
+    'right',
+    {
+      name: {
+        type: STRING
+      },
+      keyName: {
+        type: STRING
+      },
+      desc: {
+        type: STRING
+      }
     },
-    keyName: {
-      type: STRING,
-      unique: true
-    },
-    desc: {
-      type: STRING
+    {
+      indexes: [
+        { unique: true, fields: ['name'] },
+        { unique: true, fields: ['key_name'] }
+      ]
     }
-  });
+  );
 
   Right.associate = function() {
     // Many-To-Many associations
