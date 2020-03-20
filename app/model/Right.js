@@ -5,20 +5,16 @@ module.exports = app => {
     'right',
     {
       name: {
-        type: STRING
+        type: STRING,
+        unique: 'name'
       },
       keyName: {
-        type: STRING
+        type: STRING,
+        unique: 'key_name'
       },
       desc: {
         type: STRING
       }
-    },
-    {
-      indexes: [
-        { unique: true, fields: ['name'] },
-        { unique: true, fields: ['key_name'] }
-      ]
     }
   );
 
