@@ -3231,10 +3231,10 @@ egg-passport-github@^1.0.0:
     debug "^2.6.1"
     passport-github "^1.1.0"
 
-egg-passport@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/egg-passport/-/egg-passport-2.1.0.tgz#1697086f0d47cd70882e0321e3ddd93f269db51d"
-  integrity sha512-yYGpw0qtxka/SdEsGI2/tHGVyIN+01q2a+Nb3AVJGGI4SNP8MeK0Sqdl2Oj/EpJqVzbX6eAnv2lkiB64d73NTA==
+egg-passport@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/egg-passport/-/egg-passport-2.1.1.tgz#9b0e0921218d3e1dde689f048f3c1009f7852912"
+  integrity sha512-NlU65iPJNDn6u+D132HmuIFix3g5SJ1EvRc2OBfmK3asV3xpSMJISHwsHiLjfxaeUfB05x2gSxTl69Ma2wVJrA==
   dependencies:
     "@types/passport" "^0.4.7"
     debug "^3.1.0"
