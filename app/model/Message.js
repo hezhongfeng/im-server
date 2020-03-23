@@ -1,5 +1,5 @@
 module.exports = app => {
-  const { STRING, JSON, INTEGER } = app.Sequelize;
+  const { STRING, JSON, INTEGER, BOOLEAN } = app.Sequelize;
 
   const Message = app.model.define('message', {
     /**
@@ -9,6 +9,9 @@ module.exports = app => {
      */
     type: {
       type: STRING
+    },
+    hasRead: {
+      type: BOOLEAN
     },
     // 消息体
     body: {

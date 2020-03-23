@@ -7,6 +7,9 @@ module.exports = app => {
     },
     photo: {
       type: STRING
+    },
+    sign: {
+      type: STRING
     }
   });
 

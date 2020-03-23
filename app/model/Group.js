@@ -9,6 +9,9 @@ module.exports = app => {
     photo: {
       type: STRING
     },
+    introduction: {
+      type: STRING
+    },
     disabled: {
       type: BOOLEAN
     }
