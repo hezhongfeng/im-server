@@ -1,7 +1,7 @@
 # im-server
 IM application, including server and front-end.
 
-![](https://i.loli.net/2020/03/24/fEj6ZRT41JKIza9.png)
+![](https://i.loli.net/2020/03/25/63aZFbktpxVTPOe.png)
 
 ## 介绍
 总结下在IM这块的落地实践，使用`socket.io`作为IM的核心部分，不掺杂公司业务的IM通信示例，包含前后端，前端部分`Vue`和`React`都有实现。
