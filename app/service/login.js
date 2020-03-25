@@ -25,9 +25,9 @@ class LoginService extends Service {
       const userInfo = await ctx.model.UserInfo.create({
         nickname: username
       });
-      user.setUser(userInfo);
+      user.setUserInfo(userInfo);
       ctx.body = {
-        errcode: 0,
+        errcode: '0',
         errmsg: null,
         data: { id: user.id }
       };
@@ -65,7 +65,7 @@ class LoginService extends Service {
       ctx.session.user = user;
       const object = await service.user.getUserAttribute();
       ctx.body = {
-        errcode: 0,
+        errcode: '0',
         errmsg: null,
         data: Object.assign(object, { id: user.id })
       };

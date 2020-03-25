@@ -19,7 +19,7 @@ class RolesController extends Controller {
     const right = await ctx.model.Right.create(ctx.request.body);
 
     ctx.body = {
-      errcode: 0,
+      errcode: '0',
       errmsg: null,
       data: right
     };
@@ -32,7 +32,7 @@ class RolesController extends Controller {
     const right = ctx.model.Right.findByPk(ctx.request.body.id);
     await right.update(ctx.request.body);
     ctx.body = {
-      errcode: 0,
+      errcode: '0',
       errmsg: null,
       data: {}
     };
@@ -46,7 +46,7 @@ class RolesController extends Controller {
       right.destroy();
     }
     ctx.body = {
-      errcode: 0,
+      errcode: '0',
       errmsg: null,
       data: {}
     };
