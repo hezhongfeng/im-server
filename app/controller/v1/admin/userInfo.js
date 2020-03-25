@@ -6,8 +6,8 @@ class UserInfoController extends Controller {
     const { ctx } = this;
     const userInfo = ctx.model.User.findByPk(ctx.params.id).getUserInfo();
     ctx.body = {
-      errcode: '0',
-      errmsg: null,
+      statusCode: '0',
+      errorMessage: null,
       data: { userInfo }
     };
   }
@@ -19,8 +19,8 @@ class UserInfoController extends Controller {
     const userInfo = ctx.model.UserInfo.findByPk(ctx.request.body.id);
     await userInfo.update(ctx.request.body);
     ctx.body = {
-      errcode: '0',
-      errmsg: null,
+      statusCode: '0',
+      errorMessage: null,
       data: {}
     };
   }

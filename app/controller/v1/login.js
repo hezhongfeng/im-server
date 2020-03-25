@@ -21,8 +21,8 @@ class LoginController extends Controller {
       ctx.validate(createRule, params);
     } catch (error) {
       ctx.body = {
-        errcode: '1',
-        errmsg: '参数校验失败'
+        statusCode: '1',
+        errorMessage: '参数校验失败'
       };
       return;
     }
@@ -49,8 +49,8 @@ class LoginController extends Controller {
       ctx.validate(createRule, params);
     } catch (error) {
       ctx.body = {
-        errcode: '1',
-        errmsg: '参数校验失败'
+        statusCode: '1',
+        errorMessage: '参数校验失败'
       };
       return;
     }

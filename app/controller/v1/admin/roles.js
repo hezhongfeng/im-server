@@ -19,8 +19,8 @@ class RolesController extends Controller {
     const role = await ctx.model.Role.create(ctx.request.body);
 
     ctx.body = {
-      errcode: '0',
-      errmsg: null,
+      statusCode: '0',
+      errorMessage: null,
       data: role
     };
   }
@@ -32,8 +32,8 @@ class RolesController extends Controller {
     const role = ctx.model.Role.findByPk(ctx.request.body.id);
     await role.update(ctx.request.body);
     ctx.body = {
-      errcode: '0',
-      errmsg: null,
+      statusCode: '0',
+      errorMessage: null,
       data: {}
     };
   }
@@ -46,8 +46,8 @@ class RolesController extends Controller {
       role.destroy();
     }
     ctx.body = {
-      errcode: '0',
-      errmsg: null,
+      statusCode: '0',
+      errorMessage: null,
       data: {}
     };
   }

@@ -7,8 +7,8 @@ class LoginService extends Service {
     const user = await ctx.model.User.findOne({ where: { provider, username } });
     if (user) {
       ctx.body = {
-        errcode: '1', // 具体错误代码
-        errmsg: '用户名重复'
+        statusCode: '1', // 具体错误代码
+        errorMessage: '用户名重复'
       };
       return;
     }
@@ -27,8 +27,8 @@ class LoginService extends Service {
       });
       user.setUserInfo(userInfo);
       ctx.body = {
-        errcode: '0',
-        errmsg: null,
+        statusCode: '0',
+        errorMessage: null,
         data: { id: user.id }
       };
     } catch (error) {
@@ -44,8 +44,8 @@ class LoginService extends Service {
       const user = await ctx.model.User.findOne({ where: { provider, username } });
       if (!user) {
         ctx.body = {
-          errcode: '1',
-          errmsg: '用户名错误'
+          statusCode: '1',
+          errorMessage: '用户名错误'
         };
         return;
       }
@@ -57,16 +57,16 @@ class LoginService extends Service {
           .digest('hex')
       ) {
         ctx.body = {
-          errcode: '1',
-          errmsg: '密码错误'
+          statusCode: '1',
+          errorMessage: '密码错误'
         };
         return;
       }
       ctx.session.user = user;
       const object = await service.user.getUserAttribute();
       ctx.body = {
-        errcode: '0',
-        errmsg: null,
+        statusCode: '0',
+        errorMessage: null,
         data: Object.assign(object, { id: user.id })
       };
     }
