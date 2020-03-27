@@ -9,8 +9,8 @@ class startupService extends Service {
     let role = null;
     let right = null;
 
-    admin = await this.addUser('admin', 'admin');
-    user = await this.addUser('user', 'user');
+    admin = await this.addUser('admin', '123456');
+    user = await this.addUser('hezf', '123456');
     group = await this.addGroup('群魔乱舞', false);
     group.addUser(user);
     this.addSession({ user, type: '1', targetId: group.id });

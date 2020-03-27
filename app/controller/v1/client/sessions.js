@@ -5,13 +5,15 @@ class SessionController extends Controller {
   async index() {
     const { ctx } = this;
 
-    const option = {
-      offset: ctx.query.pageNumber,
-      limit: ctx.query.pageSize
-    };
-    const user = ctx.session.user;
+    // 注意这里需要经过两次查询
+    const user = await ctx.model.User.findByPk(ctx.session.user.id);
+    const sessions = await user.getSessions();
 
-    ctx.body = await user.getSessions(option);
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: sessions
+    };
   }
 
   // POST
