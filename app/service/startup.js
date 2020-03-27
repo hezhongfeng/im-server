@@ -13,6 +13,7 @@ class startupService extends Service {
     user = await this.addUser('user', 'user');
     group = await this.addGroup('群魔乱舞', false);
     group.addUser(user);
+    this.addSession({ user, type: '1', targetId: group.id });
     group = await this.addGroup('小绵羊', false);
     group.addUser(user);
     role = await this.addRole('管理员', 'admin');
@@ -25,7 +26,6 @@ class startupService extends Service {
     role.addRight(right);
     right = await this.addRight('发言', 'speak');
     role.addRight(right);
-    user.addRole(role);
   }
 
   async addUser(username, password) {
@@ -89,6 +89,24 @@ class startupService extends Service {
       keyName
     });
     return right;
+  }
+
+  async addSession({ user, type, targetId }) {
+    const { ctx } = this;
+    const sessions = await user.getSessions({
+      where: {
+        type: type,
+        targetId: targetId
+      }
+    });
+    if (sessions.length > 0) {
+      return;
+    }
+    const session = await ctx.model.Session.create({
+      type: type,
+      targetId: targetId
+    });
+    user.addSession(session);
   }
 }
 
