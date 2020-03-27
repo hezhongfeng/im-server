@@ -7,7 +7,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1568190347866_4750';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = ['auth'];
 
   // add your user config here
   config.userConfig = {
