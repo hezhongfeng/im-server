@@ -17,8 +17,8 @@ module.exports = app => {
   class Io extends app.Service {
     // 链接用户
     async connect(socket) {
-      const { id } = socket.handshake.query;
-      this.addUser({ socketId: socket.id, id });
+      const { userId } = socket.handshake.query;
+      this.addUser({ socketId: socket.id, userId });
 
       // 获取在线的cs和client集合
       const userList = await this.getOnlineUserList();
@@ -34,8 +34,8 @@ module.exports = app => {
 
     // 断开客服or客户
     async disconnect(socket) {
-      const { id } = socket.handshake.query;
-      this.removeUser({ socketId: socket.id, id });
+      const { userId } = socket.handshake.query;
+      this.removeUser({ socketId: socket.id, userId });
       const userList = this.getOnlineUserList();
       // 广播
       this.ctx.socket.broadcast.emit('/v1/cs/user-list-change', {
@@ -44,26 +44,27 @@ module.exports = app => {
     }
 
     // 添加新User
-    addUser({ socketId, id }) {
-      if (userMap.has(id)) {
-        userMap.get(id).sockets.push(socketId);
+    addUser({ socketId, userId }) {
+      if (userMap.has(userId)) {
+        userMap.get(userId).sockets.push(socketId);
       } else {
-        userMap.set(id, {
+        userMap.set(userId, {
           sockets: [socketId],
           messages: []
         });
       }
     }
 
-    removeUser({ socketId, id }) {
-      if (!userMap.has(id)) {
+    removeUser({ socketId, userId }) {
+      if (!userMap.has(userId)) {
         return;
       }
-      let socketIndex = userMap.get(id).sockets.indexOf(socketId);
+      let sockets = userMap.get(userId).sockets;
+      let socketIndex = userMap.get(userId).sockets.indexOf(socketId);
       if (socketIndex !== -1) {
         sockets.splice(socketIndex, 1);
         if (sockets.length === 0) {
-          userMap.delete(id);
+          userMap.delete(userId);
         }
       }
     }
@@ -75,6 +76,21 @@ module.exports = app => {
         userList.push(id);
       }
       return userList;
+    }
+
+    // 单人发消息
+    async sendUserMessage({ userId, message }) {
+      if (userMap.has(userId)) {
+        const sockets = clientMap.get(id).sockets;
+        for (const socketId of sockets) {
+          await this.sendMessage(socketId, message);
+        }
+      }
+    }
+
+    // 发送消息
+    async sendMessage(socketId, message) {
+      app.io.to(socketId).emit('/v1/im/new-message', message);
     }
   }
   return Io;
