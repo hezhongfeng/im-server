@@ -5,7 +5,7 @@ module.exports = () => {
     ctx.logger.info('connect: ', query);
     switch (query.scene) {
       case 'im':
-        ctx.service.userSocket.connect(ctx.socket);
+        ctx.service.io.connect(ctx.socket);
         break;
       default:
         break;
@@ -14,7 +14,7 @@ module.exports = () => {
     ctx.logger.info('disconnect: ', query);
     switch (query.scene) {
       case 'im':
-        ctx.service.userSocket.disconnect(ctx.socket);
+        ctx.service.io.disconnect(ctx.socket);
         break;
       default:
         break;
