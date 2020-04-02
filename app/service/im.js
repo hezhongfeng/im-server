@@ -114,7 +114,20 @@ module.exports = app => {
       return newMession;
     }
 
-    async getMessages({}) {}
+    async getMessages({ sessionId, pageSize = 10, pageNumber = 1 }) {
+      const { ctx } = this;
+      const session = await ctx.model.Session.findByPk(sessionId);
+      let messages = await session.getMessages({
+        offset: pageSize * (pageNumber - 1),
+        limit: pageSize
+      });
+      ctx.socket.emit('/v1/im/get-messages', {
+        sessionId,
+        pageSize,
+        pageNumber,
+        messages
+      });
+    }
   }
   return Io;
 };

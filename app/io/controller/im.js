@@ -24,6 +24,7 @@ class DefaultController extends Controller {
 
   async getMessage(ctx) {
     const payload = ctx.args[0];
+    ctx.service.im.getMessages(payload);
   }
 }
 
