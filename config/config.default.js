@@ -85,6 +85,11 @@ module.exports = appInfo => {
     formLimit: '10mb'
   };
 
+  config.static = {
+    prefix: '/upload/',
+    dir: path.join(appInfo.baseDir, 'upload')
+  };
+
   return {
     ...config
   };
