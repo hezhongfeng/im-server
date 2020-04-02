@@ -4,8 +4,8 @@ module.exports = app => {
   const Session = app.model.define('session', {
     /**
      * 消息类型：
-     * 0:单聊
-     * 1:群聊
+     * chat:单聊
+     * groupchat:群聊
      */
     type: {
       type: STRING
