@@ -9,17 +9,17 @@ class DefaultController extends Controller {
     const payload = ctx.args[0];
     // 统一时间戳
     payload.timestamp = new Date().getTime().toString();
-    switch (payload.chat_type) {
+    switch (payload.type) {
       case 'chat':
-        await ctx.service.io.sendUserMessage(payload.to.id, payload);
-        // await ctx.service.cs.sendMessageToCs(payload.from.id, payload);
+        await ctx.service.im.sendUserMessage(payload.toId, payload);
+        // await ctx.service.cs.sendMessageToCs(payload.fromId, payload);
         // // 注意对象的变化
         // await ctx.service.cs.saveMessageFromCsToClient(payload);
         break;
       case 'groupchat':
         // const res = await ctx.service.cs.saveMessageFromGroup(payload);
         // payload.id = res.id;
-        ctx.service.io.sendMessage(payload.to.id, payload);
+        ctx.service.im.sendMessage(payload.toId, payload);
         break;
       default:
         break;
