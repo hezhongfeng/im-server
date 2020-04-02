@@ -90,7 +90,29 @@ module.exports = app => {
 
     // 发送消息
     async sendMessage(socketId, message) {
-      app.io.to(socketId).emit('/v1/im/new-message', message);
+      const newMessage = await this.saveMessage(message);
+      console.log(newMessage);
+      app.io.to(socketId).emit('/v1/im/new-message', {
+        id: newMessage.id,
+        toId: newMessage.toId,
+        fromId: newMessage.fromId,
+        type: newMessage.type,
+        body: newMessage.body
+      });
+    }
+
+    // 存储消息
+    async saveMessage(message) {
+      const { ctx } = this;
+      const newMessage = await ctx.model.Message.create({
+        type: message.type,
+        hasRead: false,
+        // 消息体
+        body: message.body,
+        fromId: message.fromId,
+        toId: message.toId
+      });
+      return newMessage;
     }
   }
   return Io;
