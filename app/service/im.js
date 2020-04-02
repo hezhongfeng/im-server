@@ -91,12 +91,11 @@ module.exports = app => {
     // 发送消息
     async sendMessage(socketId, message) {
       const newMessage = await this.saveMessage(message);
-      console.log(newMessage);
       app.io.to(socketId).emit('/v1/im/new-message', {
+        sessionId: message.sessionId,
         id: newMessage.id,
         toId: newMessage.toId,
         fromId: newMessage.fromId,
-        type: newMessage.type,
         body: newMessage.body
       });
     }
@@ -104,16 +103,18 @@ module.exports = app => {
     // 存储消息
     async saveMessage(message) {
       const { ctx } = this;
-      const newMessage = await ctx.model.Message.create({
-        type: message.type,
+      const session = await ctx.model.Session.findByPk(message.sessionId);
+      const newMession = await ctx.model.Message.create({
         hasRead: false,
-        // 消息体
         body: message.body,
         fromId: message.fromId,
         toId: message.toId
       });
-      return newMessage;
+      session.addMessage(newMession);
+      return newMession;
     }
+
+    async getMessages({}) {}
   }
   return Io;
 };

@@ -26,5 +26,10 @@ module.exports = app => {
     }
   });
 
+  Session.associate = function() {
+    // One-To-Many associations
+    app.model.Session.hasMany(app.model.Message);
+  };
+
   return Session;
 };
