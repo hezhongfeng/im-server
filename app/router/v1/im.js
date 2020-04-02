@@ -5,7 +5,8 @@ module.exports = app => {
   io.of('/').route('server', io.controller.chat.ping);
   // 加入群
   io.of('/').route('/v1/im/join-room', app.io.controller.im.joinRoom);
-  // Client发送消息
+  // 发送消息
   io.of('/').route('/v1/im/new-message', app.io.controller.im.newMessage);
-
+  // 查询消息
+  io.of('/').route('/v1/im/get-messages', app.io.controller.im.getMessage);
 };
