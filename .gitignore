@@ -10,3 +10,4 @@ run/
 *.un~
 typings/
 .nyc_output/
+upload/
