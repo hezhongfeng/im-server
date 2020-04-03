@@ -111,8 +111,11 @@ module.exports = app => {
 
     async getMessages({ sessionId, pageSize = 10, pageNumber = 1 }) {
       const { ctx } = this;
-      const session = await ctx.model.Session.findByPk(sessionId);
-      let messages = await session.getMessages({
+      // 计数查询
+      let result = await ctx.model.Message.findAndCountAll({
+        where: {
+          sessionId: sessionId
+        },
         offset: pageSize * (pageNumber - 1),
         limit: pageSize,
         order: [['created_at', 'DESC']]
@@ -121,7 +124,8 @@ module.exports = app => {
         sessionId,
         pageSize,
         pageNumber,
-        messages
+        count: result.count,
+        messages: result.rows
       });
     }
   }
