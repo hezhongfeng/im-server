@@ -89,9 +89,9 @@ module.exports = app => {
     }
 
     // 发送消息
-    async sendMessage(socketId, message) {
+    async sendMessage(message) {
       const newMessage = await this.saveMessage(message);
-      app.io.to(socketId).emit('/v1/im/new-message', newMessage);
+      app.io.to(message.sessionId).emit('/v1/im/new-message', newMessage);
     }
 
     // 存储消息
