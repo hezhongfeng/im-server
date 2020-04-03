@@ -4,11 +4,12 @@ class UserInfoController extends Controller {
   // GET
   async show() {
     const { ctx } = this;
-    const userInfo = ctx.model.User.findByPk(ctx.params.id).getUserInfo();
+    const user = await ctx.model.User.findByPk(ctx.session.user.id);
+    const userInfo = await user.getUserInfo();
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: { userInfo }
+      data: userInfo
     };
   }
 

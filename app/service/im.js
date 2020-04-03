@@ -105,6 +105,7 @@ module.exports = app => {
         toId: message.toId
       });
       await session.addMessage(newMession);
+      // 注意这里重新查询是为了和已经持久化的model格式统一
       return await ctx.model.Message.findByPk(newMession.id);
     }
 

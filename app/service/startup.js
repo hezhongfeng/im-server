@@ -11,9 +11,11 @@ class startupService extends Service {
 
     admin = await this.addUser('admin', '123456');
     user = await this.addUser('hezf', '123456');
+    let laohe = await this.addUser('laohe', '123456');
     group = await this.addGroup('群魔乱舞', false);
     group.addUser(user);
     this.addSession({ user, type: 'groupchat', targetId: group.id });
+    this.addSession({ user, type: 'chat', targetId: laohe.id });
     group = await this.addGroup('小绵羊', false);
     group.addUser(user);
     role = await this.addRole('管理员', 'admin');
