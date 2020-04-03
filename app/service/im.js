@@ -91,13 +91,7 @@ module.exports = app => {
     // 发送消息
     async sendMessage(socketId, message) {
       const newMessage = await this.saveMessage(message);
-      app.io.to(socketId).emit('/v1/im/new-message', {
-        sessionId: message.sessionId,
-        id: newMessage.id,
-        toId: newMessage.toId,
-        fromId: newMessage.fromId,
-        body: newMessage.body
-      });
+      app.io.to(socketId).emit('/v1/im/new-message', newMessage);
     }
 
     // 存储消息
@@ -110,8 +104,8 @@ module.exports = app => {
         fromId: message.fromId,
         toId: message.toId
       });
-      session.addMessage(newMession);
-      return newMession;
+      await session.addMessage(newMession);
+      return await ctx.model.Message.findByPk(newMession.id);
     }
 
     async getMessages({ sessionId, pageSize = 10, pageNumber = 1 }) {
@@ -119,7 +113,8 @@ module.exports = app => {
       const session = await ctx.model.Session.findByPk(sessionId);
       let messages = await session.getMessages({
         offset: pageSize * (pageNumber - 1),
-        limit: pageSize
+        limit: pageSize,
+        order: [['created_at', 'DESC']]
       });
       ctx.socket.emit('/v1/im/get-messages', {
         sessionId,

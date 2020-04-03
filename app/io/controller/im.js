@@ -2,15 +2,15 @@ const Controller = require('egg').Controller;
 
 class DefaultController extends Controller {
   async newMessage(ctx) {
-    const payload = ctx.args[0];
+    const message = ctx.args[0];
     // 统一时间戳
-    payload.timestamp = new Date().getTime().toString();
-    switch (payload.type) {
+    // message.timestamp = new Date().getTime().toString();
+    switch (message.type) {
       case 'chat':
-        await ctx.service.im.sendUserMessage(payload.toId, payload);
+        await ctx.service.im.sendUserMessage(message.toId, message);
         break;
       case 'groupchat':
-        await ctx.service.im.sendMessage(payload.toId, payload);
+        await ctx.service.im.sendMessage(message.toId, message);
         break;
       default:
         break;
