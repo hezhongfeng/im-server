@@ -5,9 +5,6 @@ module.exports = app => {
     provider: {
       type: STRING
     },
-    uid: {
-      type: STRING
-    },
     username: {
       type: STRING,
       unique: 'username'
@@ -21,12 +18,10 @@ module.exports = app => {
     // One-To-One associations
     app.model.User.hasOne(app.model.UserInfo);
 
-    // One-To-Many associations
-    app.model.User.hasMany(app.model.Session);
-
     // Many-To-Many associations
     app.model.User.belongsToMany(app.model.Group, { through: 'user_group' });
     app.model.User.belongsToMany(app.model.Role, { through: 'user_role' });
+    app.model.User.belongsToMany(app.model.Session, { through: 'user_session' });
   };
 
   return User;

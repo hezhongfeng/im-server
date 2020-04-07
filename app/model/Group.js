@@ -1,23 +1,25 @@
-module.exports = app => {
+module.exports = (app) => {
   const { STRING, BOOLEAN } = app.Sequelize;
 
   const Group = app.model.define('group', {
     name: {
       type: STRING,
-      unique: 'name'
+      unique: 'name',
     },
     photo: {
-      type: STRING
+      type: STRING,
     },
     introduction: {
-      type: STRING
+      type: STRING,
     },
     disabled: {
-      type: BOOLEAN
-    }
+      type: BOOLEAN,
+    },
   });
 
-  Group.associate = function() {
+  Group.associate = function () {
+    // One-To-One associations
+    app.model.Group.belongsTo(app.model.Session);
     // Many-To-Many associations
     app.model.Group.belongsToMany(app.model.User, { through: 'user_group' });
   };

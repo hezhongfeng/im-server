@@ -1,34 +1,23 @@
-module.exports = app => {
-  const { STRING, JSON, INTEGER, BOOLEAN, DATE, NOW } = app.Sequelize;
+module.exports = (app) => {
+  const { STRING } = app.Sequelize;
 
   const Session = app.model.define('session', {
     /**
-     * 消息类型：
+     * 会话类型：
      * chat:单聊
      * groupchat:群聊
      */
     type: {
-      type: STRING
-    },
-    // 是否置顶
-    isTop: {
-      type: BOOLEAN,
-      defaultValue: false
-    },
-    // 置顶时间
-    topTime: {
-      type: DATE,
-      defaultValue: NOW
-    },
-    targetId: {
       type: STRING,
-      allowNull: false
-    }
+    },
   });
 
-  Session.associate = function() {
+  Session.associate = function () {
     // One-To-Many associations
     app.model.Session.hasMany(app.model.Message);
+
+    // Many-To-Many associations
+    app.model.Session.belongsToMany(app.model.User, { through: 'user_session' });
   };
 
   return Session;

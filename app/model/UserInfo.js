@@ -13,9 +13,9 @@ module.exports = app => {
     }
   });
 
-  UserInfo.associate = function() {
-    app.model.UserInfo.belongsTo(app.model.User);
-  };
+  // UserInfo.associate = function() {
+  //   app.model.UserInfo.belongsTo(app.model.User);
+  // };
 
   return UserInfo;
 };
