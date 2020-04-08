@@ -15,7 +15,7 @@ class ConversationController extends Controller {
       let conversation = {
         id: iterator.id,
         type: iterator.type,
-        updatedAt: iterator.user_conversation.updatedAt,
+        updatedAt: iterator.updatedAt,
       };
       if (conversation.type === 'chat') {
         let users = await iterator.getUsers({

@@ -13,7 +13,7 @@
  */
 const userMap = new Map();
 
-module.exports = app => {
+module.exports = (app) => {
   class Io extends app.Service {
     // 链接用户
     async connect(socket) {
@@ -28,7 +28,7 @@ module.exports = app => {
       // });
       // 广播
       this.ctx.socket.broadcast.emit('/v1/user-list-change', {
-        userList
+        userList,
       });
     }
 
@@ -39,7 +39,7 @@ module.exports = app => {
       const userList = this.getOnlineUserList();
       // 广播
       this.ctx.socket.broadcast.emit('/v1/cs/user-list-change', {
-        userList
+        userList,
       });
     }
 
@@ -50,7 +50,7 @@ module.exports = app => {
       } else {
         userMap.set(userId, {
           sockets: [socketId],
-          messages: []
+          messages: [],
         });
       }
     }
@@ -98,12 +98,16 @@ module.exports = app => {
     async saveMessage(message) {
       const { ctx } = this;
       const conversation = await ctx.model.Conversation.findByPk(message.conversationId);
+      conversation.activeTime = new Date();
+      await conversation.save();
+
       const newMession = await ctx.model.Message.create({
         hasRead: false,
         body: message.body,
         fromId: message.fromId,
-        toId: message.toId
+        toId: message.toId,
       });
+
       await conversation.addMessage(newMession);
       // 注意这里重新查询是为了和已经持久化的model格式统一
       return await ctx.model.Message.findByPk(newMession.id);
@@ -114,18 +118,18 @@ module.exports = app => {
       // 计数查询
       let result = await ctx.model.Message.findAndCountAll({
         where: {
-          conversationId: conversationId
+          conversationId: conversationId,
         },
         offset: pageSize * (pageNumber - 1),
         limit: pageSize,
-        order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']],
       });
       ctx.socket.emit('/v1/im/get-messages', {
         conversationId,
         pageSize,
         pageNumber,
         count: result.count,
-        messages: result.rows
+        messages: result.rows,
       });
     }
   }
