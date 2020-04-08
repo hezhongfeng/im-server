@@ -19,7 +19,8 @@ module.exports = (app) => {
 
   Group.associate = function () {
     // One-To-One associations
-    app.model.Group.belongsTo(app.model.Session);
+    app.model.Group.belongsTo(app.model.Conversation);
+
     // Many-To-Many associations
     app.model.Group.belongsToMany(app.model.User, { through: 'user_group' });
   };

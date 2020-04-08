@@ -91,37 +91,37 @@ module.exports = app => {
     // 发送消息
     async sendMessage(message) {
       const newMessage = await this.saveMessage(message);
-      app.io.to(message.sessionId).emit('/v1/im/new-message', newMessage);
+      app.io.to(message.conversationId).emit('/v1/im/new-message', newMessage);
     }
 
     // 存储消息
     async saveMessage(message) {
       const { ctx } = this;
-      const session = await ctx.model.Session.findByPk(message.sessionId);
+      const conversation = await ctx.model.Conversation.findByPk(message.conversationId);
       const newMession = await ctx.model.Message.create({
         hasRead: false,
         body: message.body,
         fromId: message.fromId,
         toId: message.toId
       });
-      await session.addMessage(newMession);
+      await conversation.addMessage(newMession);
       // 注意这里重新查询是为了和已经持久化的model格式统一
       return await ctx.model.Message.findByPk(newMession.id);
     }
 
-    async getMessages({ sessionId, pageSize = 10, pageNumber = 1 }) {
+    async getMessages({ conversationId, pageSize = 10, pageNumber = 1 }) {
       const { ctx } = this;
       // 计数查询
       let result = await ctx.model.Message.findAndCountAll({
         where: {
-          sessionId: sessionId
+          conversationId: conversationId
         },
         offset: pageSize * (pageNumber - 1),
         limit: pageSize,
         order: [['created_at', 'DESC']]
       });
       ctx.socket.emit('/v1/im/get-messages', {
-        sessionId,
+        conversationId,
         pageSize,
         pageNumber,
         count: result.count,

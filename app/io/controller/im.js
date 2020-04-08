@@ -8,7 +8,7 @@ class DefaultController extends Controller {
 
   async join(ctx) {
     const payload = ctx.args[0];
-    await ctx.socket.join(payload.sessionId);
+    await ctx.socket.join(payload.conversationId);
   }
 
   async getMessages(ctx) {

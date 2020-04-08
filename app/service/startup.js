@@ -3,23 +3,17 @@ const crypto = require('crypto');
 
 class startupService extends Service {
   async start() {
-    let user = null;
-    let admin = null;
-    let group = null;
-    let role = null;
-    let right = null;
-    admin = await this.addUser('admin', '123456');
-    user = await this.addUser('hezf', '123456');
+    let admin = await this.addUser('admin', '123456');
+    let user = await this.addUser('hezf', '123456');
     let laohe = await this.addUser('laohe', '123456');
-    await this.addSession({ type: 'chat', userList: [user, laohe] });
-    group = await this.addGroup('群魔乱舞', false);
-    group.addUser(user);
-    group.addUser(laohe);
+    let xiaohe = await this.addUser('xiaohe', '123456');
+    await this.addConversation({ type: 'chat', userList: [user, laohe] });
+    await this.addConversation({ type: 'chat', userList: [user, xiaohe] });
 
-    group = await this.addGroup('小绵羊', false);
-    group.addUser(user);
-    role = await this.addRole('管理员', 'admin');
-    right = await this.addRight('管理', 'admin');
+    await this.addGroup({ name: '谈笑有鸿儒', disabled: false, userList: [user, laohe] });
+    await this.addGroup({ name: '往来无白丁', disabled: false, userList: [user, laohe, xiaohe] });
+    let role = await this.addRole('管理员', 'admin');
+    let right = await this.addRight('管理', 'admin');
     role.addRight(right);
     admin.addRole(role);
     role = await this.addRole('用户', 'user');
@@ -44,17 +38,17 @@ class startupService extends Service {
     const userInfo = await ctx.model.UserInfo.create({
       nickname: username,
     });
-    user.setUserInfo(userInfo);
+    await user.setUserInfo(userInfo);
     return user;
   }
 
-  async addGroup(name, disabled, photo = '') {
+  async addGroup({ name, disabled, photo = '', userList }) {
     const { ctx } = this;
     let group = await ctx.model.Group.findOne({ where: { name } });
     if (group) {
       return group;
     }
-    const session = await ctx.model.Session.create({
+    const conversation = await ctx.model.Conversation.create({
       type: 'groupchat',
     });
     group = await ctx.model.Group.create({
@@ -62,8 +56,11 @@ class startupService extends Service {
       photo,
       disabled,
     });
-    await group.setSession(session);
-
+    await group.setConversation(conversation);
+    for (const user of userList) {
+      await conversation.addUser(user);
+      await group.addUser(user);
+    }
     return group;
   }
 
@@ -93,37 +90,37 @@ class startupService extends Service {
     return right;
   }
 
-  async addSession({ type, userList }) {
+  async addConversation({ type, userList }) {
     const { ctx } = this;
     if (userList.length <= 1) {
       return;
     }
-    // 判断是否已经有了 session
-    const user1Sessions = await userList[0].getSessions({
+    // 判断是否已经有了 会话
+    const user1Conversations = await userList[0].getConversations({
       where: {
         type: type,
       },
     });
-    const user2Sessions = await userList[1].getSessions({
+    const user2Conversations = await userList[1].getConversations({
       where: {
         type: type,
       },
     });
 
-    for (const user1Session of user1Sessions) {
-      for (const user2Session of user2Sessions) {
-        if (user1Session.id === user2Session.id) {
+    for (const user1Conversation of user1Conversations) {
+      for (const user2Conversation of user2Conversations) {
+        if (user1Conversation.id === user2Conversation.id) {
           return;
         }
       }
     }
 
-    const session = await ctx.model.Session.create({
+    const conversation = await ctx.model.Conversation.create({
       type: type,
     });
 
     for (const user of userList) {
-      session.addUser(user);
+      conversation.addUser(user);
     }
   }
 }
