@@ -4,21 +4,19 @@ class ConversationController extends Controller {
   // INDEX
   async index() {
     const { ctx } = this;
-    // const Op = Sequelize.Op;
     const { Op } = this.app.Sequelize;
 
     // 注意这里需要经过两次查询
     const user = await ctx.model.User.findByPk(ctx.session.user.id);
-    const conversations = await user.getConversations();
+    let conversations = await user.getConversations();
+
     let data = [];
     for (const iterator of conversations) {
       let conversation = {
         id: iterator.id,
         type: iterator.type,
-        createdAt: iterator.createdAt,
-        updatedAt: iterator.updatedAt,
+        updatedAt: iterator.user_conversation.updatedAt,
       };
-      conversation.targetId = '1212234';
       if (conversation.type === 'chat') {
         let users = await iterator.getUsers({
           where: {
@@ -38,6 +36,7 @@ class ConversationController extends Controller {
       }
       data.push(conversation);
     }
+    data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     ctx.body = {
       statusCode: '0',
