@@ -4,10 +4,10 @@ module.exports = (app) => {
   const Message = app.model.define('message', {
     // 消息体
     body: {
-      type: JSON,
+      type: JSON
     },
     fromId: { type: INTEGER },
-    toId: { type: INTEGER },
+    toId: { type: INTEGER }
   });
 
   return Message;

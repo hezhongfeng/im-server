@@ -57,6 +57,17 @@ class LoginController extends Controller {
 
     await service.login.login(params);
   }
+
+  async logout() {
+    const { ctx } = this;
+    ctx.session.user = null;
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
 }
 
 module.exports = LoginController;

@@ -3,6 +3,7 @@ module.exports = app => {
 
   // 登录校验
   router.post('/api/v1/login', controller.v1.login.login);
+  router.post('/api/v1/logout', controller.v1.login.logout);
   router.post('/api/v1/signup', controller.v1.login.signup);
 
   // github登录授权

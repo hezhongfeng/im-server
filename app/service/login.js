@@ -3,7 +3,7 @@ const crypto = require('crypto');
 
 class LoginService extends Service {
   async create({ provider, username, password }) {
-    const { ctx, config } = this;
+    const { ctx, config, service } = this;
     const user = await ctx.model.User.findOne({ where: { provider, username } });
     if (user) {
       ctx.body = {
@@ -17,19 +17,20 @@ class LoginService extends Service {
       const user = await ctx.model.User.create({
         provider,
         username,
-        password: crypto
-          .createHmac('sha256', secret)
-          .update(password)
-          .digest('hex')
+        password: crypto.createHmac('sha256', secret).update(password).digest('hex')
       });
       const userInfo = await ctx.model.UserInfo.create({
-        nickname: username
+        nickname: username,
       });
       user.setUserInfo(userInfo);
+      ctx.session.user = {
+        id: user.id
+      };
+      const object = await service.user.getUserAttribute();
       ctx.body = {
         statusCode: '0',
         errorMessage: null,
-        data: { id: user.id }
+        data: Object.assign(object, { id: user.id })
       };
     } catch (error) {
       console.warn('error', error);
@@ -49,20 +50,16 @@ class LoginService extends Service {
         };
         return;
       }
-      if (
-        user.password !==
-        crypto
-          .createHmac('sha256', secret)
-          .update(password)
-          .digest('hex')
-      ) {
+      if (user.password !== crypto.createHmac('sha256', secret).update(password).digest('hex')) {
         ctx.body = {
           statusCode: '1',
           errorMessage: '密码错误'
         };
         return;
       }
-      ctx.session.user = user;
+      ctx.session.user = {
+        id: user.id
+      };
       const object = await service.user.getUserAttribute();
       ctx.body = {
         statusCode: '0',
