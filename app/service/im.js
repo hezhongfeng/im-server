@@ -98,19 +98,29 @@ module.exports = (app) => {
     async saveMessage(message) {
       const { ctx } = this;
       const conversation = await ctx.model.Conversation.findByPk(message.conversationId);
+      // 注意这里要更新下会话的激活时间
       conversation.activeTime = new Date();
-      await conversation.save();
 
-      const newMession = await ctx.model.Message.create({
-        hasRead: false,
+      let newMessage = await ctx.model.Message.create({
         body: message.body,
         fromId: message.fromId,
         toId: message.toId,
       });
 
-      await conversation.addMessage(newMession);
+      await conversation.addMessage(newMessage);
+      await conversation.save();
+
       // 注意这里重新查询是为了和已经持久化的model格式统一
-      return await ctx.model.Message.findByPk(newMession.id);
+      newMessage = await ctx.model.Message.findByPk(newMessage.id);
+
+      return {
+        id: newMessage.id,
+        body: newMessage.body,
+        fromId: newMessage.fromId,
+        toId: newMessage.toId,
+        createdAt: newMessage.createdAt,
+        conversationId: message.conversationId,
+      };
     }
 
     async getMessages({ conversationId, pageSize = 10, pageNumber = 1 }) {
