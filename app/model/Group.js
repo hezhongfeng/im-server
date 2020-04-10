@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const { STRING, BOOLEAN } = app.Sequelize;
+  const { STRING, BOOLEAN, INTEGER } = app.Sequelize;
 
   const Group = app.model.define('group', {
     name: {
@@ -14,6 +14,10 @@ module.exports = (app) => {
     },
     disabled: {
       type: BOOLEAN,
+    },
+    ownerId: {
+      type: INTEGER,
+      allowNull: false,
     },
   });
 

@@ -4,14 +4,14 @@ const crypto = require('crypto');
 class startupService extends Service {
   async start() {
     let admin = await this.addUser('admin', '123456');
-    let user = await this.addUser('hezf', '123456');
+    let hezf = await this.addUser('hezf', '123456');
     let laohe = await this.addUser('laohe', '123456');
     let xiaohe = await this.addUser('xiaohe', '123456');
-    await this.addConversation({ type: 'chat', userList: [user, laohe] });
-    await this.addConversation({ type: 'chat', userList: [user, xiaohe] });
+    await this.createConversation({ type: 'chat', userList: [hezf, laohe] });
+    await this.createConversation({ type: 'chat', userList: [hezf, xiaohe] });
 
-    await this.addGroup({ name: '谈笑有鸿儒', disabled: false, userList: [user, laohe] });
-    await this.addGroup({ name: '往来无白丁', disabled: false, userList: [user, laohe, xiaohe] });
+    await this.createGroup({ name: '谈笑有鸿儒', disabled: false, userList: [hezf, laohe], owner: hezf });
+    await this.createGroup({ name: '往来无白丁', disabled: false, userList: [laohe, hezf, xiaohe], owner: laohe });
     let role = await this.addRole('管理员', 'admin');
     let right = await this.addRight('管理', 'admin');
     role.addRight(right);
@@ -42,7 +42,8 @@ class startupService extends Service {
     return user;
   }
 
-  async addGroup({ name, disabled, photo = '', userList }) {
+  // 创建群组
+  async createGroup({ name, disabled, photo = '', userList, owner }) {
     const { ctx } = this;
     let group = await ctx.model.Group.findOne({ where: { name } });
     if (group) {
@@ -55,6 +56,7 @@ class startupService extends Service {
       name,
       photo,
       disabled,
+      ownerId: owner.id,
     });
     await group.setConversation(conversation);
     for (const user of userList) {
@@ -90,7 +92,8 @@ class startupService extends Service {
     return right;
   }
 
-  async addConversation({ type, userList }) {
+  // 创建会话
+  async createConversation({ type, userList }) {
     const { ctx } = this;
     if (userList.length <= 1) {
       return;

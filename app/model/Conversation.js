@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const { STRING, DATE } = app.Sequelize;
+  const { STRING, DATE, BOOLEAN } = app.Sequelize;
 
   const Conversation = app.model.define('conversation', {
     /**
@@ -12,6 +12,10 @@ module.exports = (app) => {
     },
     activeTime: {
       type: DATE,
+    },
+    active: {
+      type: BOOLEAN,
+      defaultValue: true,
     },
   });
 

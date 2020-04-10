@@ -132,7 +132,7 @@ module.exports = (app) => {
         },
         offset: pageSize * (pageNumber - 1),
         limit: pageSize,
-        order: [['created_at', 'DESC']],
+        order: [['created_at', 'DESC']]
       });
       ctx.socket.emit('/v1/im/get-messages', {
         conversationId,
