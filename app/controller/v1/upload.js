@@ -9,7 +9,7 @@ class uploadController extends Controller {
     const data = [];
     for (const file of ctx.request.files) {
       // 生成文件路径，注意upload文件路径需要存在
-      const filePath = `./upload/${Date.now() +
+      const filePath = `./public/upload/${Date.now() +
         Math.floor(Math.random() * 100000).toString() +
         '.' +
         file.filename.split('.').pop()}`;
