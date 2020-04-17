@@ -6,7 +6,8 @@ module.exports = app => {
       type: STRING
     },
     photo: {
-      type: STRING
+      type: STRING,
+      defaultValue: '/public/images/head.png'
     },
     sign: {
       type: STRING
