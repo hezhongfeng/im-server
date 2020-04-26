@@ -1,19 +1,19 @@
-module.exports = (app) => {
+module.exports = app => {
   const { STRING, BOOLEAN, INTEGER } = app.Sequelize;
 
   const Apply = app.model.define('apply', {
     type: {
-      type: STRING,
+      type: STRING
     },
     fromId: {
-      type: INTEGER,
+      type: INTEGER
     },
     toId: {
-      type: INTEGER,
+      type: INTEGER
     },
     hasHandled: {
-      type: BOOLEAN,
-    },
+      type: BOOLEAN
+    }
   });
 
   return Apply;

@@ -7,15 +7,18 @@ class AddController extends Controller {
     const { searchValue } = ctx.request.body;
 
     const groups = await ctx.model.Group.findAll({ where: { name: searchValue } });
-    const users = await ctx.model.User.findAll({ where: { username: searchValue } });
+    const users = await ctx.model.User.findAll({
+      where: { username: searchValue },
+      attributes: { exclude: ['password'] }
+    });
 
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
       data: {
         users,
-        groups,
-      },
+        groups
+      }
     };
   }
 
@@ -29,7 +32,7 @@ class AddController extends Controller {
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: null,
+      data: null
     };
   }
 
@@ -46,32 +49,35 @@ class AddController extends Controller {
       let conversation = {
         id: iterator.id,
         type: iterator.type,
-        updatedAt: iterator.updatedAt,
+        updatedAt: iterator.updatedAt
       };
       if (conversation.type === 'chat') {
         let users = await iterator.getUsers({
           where: {
             id: {
-              [Op.ne]: ctx.session.user.id,
-            },
-          },
+              [Op.ne]: ctx.session.user.id
+            }
+          }
         });
         let user = users.pop();
+        const userInfo = await user.getUserInfo();
         conversation.target = {
           id: user.id,
           type: user.type,
           name: user.username,
+          userInfo: userInfo
         };
       } else if (conversation.type === 'groupchat') {
         let group = await ctx.model.Group.findOne({
           where: {
-            conversationId: iterator.id,
-          },
+            conversationId: iterator.id
+          }
         });
         conversation.target = {
           id: group.id,
           type: group.type,
           name: group.name,
+          photo: group.photo
         };
       }
       data.push(conversation);
@@ -81,7 +87,7 @@ class AddController extends Controller {
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: data,
+      data: data
     };
   }
 }
