@@ -1,4 +1,4 @@
-module.exports = (app) => {
+module.exports = app => {
   const { router, controller } = app;
 
   // 搜索好友
@@ -9,4 +9,6 @@ module.exports = (app) => {
   router.post('/api/v1/add/group', controller.v1.add.search);
   // 通讯录
   router.get('/api/v1/mail-list', controller.v1.add.getMailList);
+  // 群组
+  router.get('/api/v1/group-list', controller.v1.add.getGroupList);
 };
