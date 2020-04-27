@@ -21,7 +21,7 @@ module.exports = app => {
     }
   });
 
-  Group.associate = function () {
+  Group.associate = function() {
     // One-To-One associations
     app.model.Group.belongsTo(app.model.Conversation);
 
