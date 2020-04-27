@@ -38,10 +38,39 @@ class ApplyController extends Controller {
     };
   }
 
-  // 同意或者拒绝
-  async apply() {
+  // 同意或者拒绝加为好友
+  async applyFriend() {
     const { ctx, service } = this;
-    const { hasHandled } = ctx.request.body;
+    const { id, approval } = ctx.request.body;
+    const apply = await ctx.model.Apply.findByPk(id);
+    let errorMessage = '';
+    let statusCode = '0';
+
+    if (!apply) {
+      errorMessage = '参数错误';
+    } else if (approval) {
+      if (apply.toId !== ctx.session.user.id) {
+        errorMessage = '无此权限';
+        statusCode = '2';
+      } else {
+        service.apply.approvalAddFriend({ fromId: apply.fromId, toId: apply.toId });
+      }
+    }
+
+    apply.hasHandled = true;
+    await apply.save();
+
+    ctx.body = {
+      statusCode,
+      errorMessage,
+      data: null
+    };
+  }
+
+  // 同意或者拒绝进群
+  async applyGroup() {
+    const { ctx, service } = this;
+    const { approval } = ctx.request.body;
     const apply = await ctx.model.Apply.findByPk(ctx.params.id);
     let group = null;
     let errorMessage = '';
@@ -49,31 +78,17 @@ class ApplyController extends Controller {
 
     if (!apply) {
       errorMessage = '参数错误';
-    } else if (hasHandled) {
-      switch (apply.type) {
-        case 'user':
-          if (apply.toId !== ctx.session.user.id) {
-            errorMessage = '无此权限';
-            statusCode = '2';
-          } else {
-            service.apply.approvalAddFriend({ fromId: apply.fromId, toId: apply.toId });
-          }
-          break;
-        case 'group':
-          group = await ctx.model.Group.findByPk(apply.toId);
-          if (group.ownerId !== ctx.session.user.id) {
-            errorMessage = '无此权限';
-            statusCode = '2';
-          } else {
-            service.apply.approvalAddGroup({ group, fromId: apply.fromId });
-          }
-          break;
-        default:
-          break;
+    } else if (approval) {
+      group = await ctx.model.Group.findByPk(apply.toId);
+      if (group.ownerId !== ctx.session.user.id) {
+        errorMessage = '无此权限';
+        statusCode = '2';
+      } else {
+        service.apply.approvalAddGroup({ group, fromId: apply.fromId });
       }
     }
 
-    apply.hasHandled = hasHandled;
+    apply.hasHandled = true;
     await apply.save();
 
     ctx.body = {
