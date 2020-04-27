@@ -1,4 +1,4 @@
-module.exports = (app) => {
+module.exports = app => {
   const { STRING, DATE, BOOLEAN } = app.Sequelize;
 
   const Conversation = app.model.define('conversation', {
@@ -8,18 +8,18 @@ module.exports = (app) => {
      * groupchat:群聊
      */
     type: {
-      type: STRING,
+      type: STRING
     },
     activeTime: {
-      type: DATE,
+      type: DATE
     },
     active: {
       type: BOOLEAN,
-      defaultValue: true,
-    },
+      defaultValue: true
+    }
   });
 
-  Conversation.associate = function () {
+  Conversation.associate = function() {
     // One-To-Many associations
     app.model.Conversation.hasMany(app.model.Message);
 

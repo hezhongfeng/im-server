@@ -12,7 +12,8 @@ module.exports = app => {
       type: INTEGER
     },
     hasHandled: {
-      type: BOOLEAN
+      type: BOOLEAN,
+      defaultValue: false
     }
   });
 

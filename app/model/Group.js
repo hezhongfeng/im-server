@@ -1,24 +1,24 @@
-module.exports = (app) => {
+module.exports = app => {
   const { STRING, BOOLEAN, INTEGER } = app.Sequelize;
 
   const Group = app.model.define('group', {
     name: {
       type: STRING,
-      unique: 'name',
+      unique: 'name'
     },
     photo: {
-      type: STRING,
+      type: STRING
     },
     introduction: {
-      type: STRING,
+      type: STRING
     },
     disabled: {
-      type: BOOLEAN,
+      type: BOOLEAN
     },
     ownerId: {
       type: INTEGER,
-      allowNull: false,
-    },
+      allowNull: false
+    }
   });
 
   Group.associate = function () {
