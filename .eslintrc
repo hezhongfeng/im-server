@@ -2,6 +2,8 @@
   "extends": "eslint-config-egg",
   "rules": {
     "comma-dangle": [2, "never"],
-    "strict": [0]
+    "strict": [0],
+    "object-shorthand": "off",
+    "array-bracket-spacing": "off"
   }
 }
