@@ -3,10 +3,10 @@ const crypto = require('crypto');
 
 class startupService extends Service {
   async start() {
-    let admin = await this.addUser('admin', '123456');
-    let hezf = await this.addUser('hezf', '123456');
-    let laohe = await this.addUser('laohe', '123456');
-    let xiaohe = await this.addUser('xiaohe', '123456');
+    const admin = await this.addUser('admin', '123456');
+    const hezf = await this.addUser('hezf', '123456');
+    const laohe = await this.addUser('laohe', '123456');
+    const xiaohe = await this.addUser('xiaohe', '123456');
     await this.createConversation({ type: 'chat', userList: [hezf, laohe] });
     await this.createConversation({ type: 'chat', userList: [hezf, xiaohe] });
 
@@ -33,10 +33,10 @@ class startupService extends Service {
     user = await ctx.model.User.create({
       provider: 'local',
       username,
-      password: crypto.createHmac('sha256', secret).update(password).digest('hex'),
+      password: crypto.createHmac('sha256', secret).update(password).digest('hex')
     });
     const userInfo = await ctx.model.UserInfo.create({
-      nickname: username,
+      nickname: username
     });
     await user.setUserInfo(userInfo);
     return user;
@@ -50,13 +50,13 @@ class startupService extends Service {
       return group;
     }
     const conversation = await ctx.model.Conversation.create({
-      type: 'groupchat',
+      type: 'groupchat'
     });
     group = await ctx.model.Group.create({
       name,
       photo,
       disabled,
-      ownerId: owner.id,
+      ownerId: owner.id
     });
     await group.setConversation(conversation);
     for (const user of userList) {
@@ -74,7 +74,7 @@ class startupService extends Service {
     }
     role = await ctx.model.Role.create({
       name,
-      keyName,
+      keyName
     });
     return role;
   }
@@ -87,7 +87,7 @@ class startupService extends Service {
     }
     right = await ctx.model.Right.create({
       name,
-      keyName,
+      keyName
     });
     return right;
   }
@@ -101,13 +101,13 @@ class startupService extends Service {
     // 判断是否已经有了 会话
     const user1Conversations = await userList[0].getConversations({
       where: {
-        type: type,
-      },
+        type: type
+      }
     });
     const user2Conversations = await userList[1].getConversations({
       where: {
-        type: type,
-      },
+        type: type
+      }
     });
 
     for (const user1Conversation of user1Conversations) {
@@ -119,7 +119,7 @@ class startupService extends Service {
     }
 
     const conversation = await ctx.model.Conversation.create({
-      type: type,
+      type: type
     });
 
     for (const user of userList) {

@@ -20,7 +20,7 @@ class LoginService extends Service {
         password: crypto.createHmac('sha256', secret).update(password).digest('hex')
       });
       const userInfo = await ctx.model.UserInfo.create({
-        nickname: username,
+        nickname: username
       });
       user.setUserInfo(userInfo);
       ctx.session.user = {
