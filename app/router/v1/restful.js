@@ -6,5 +6,5 @@ module.exports = app => {
   router.resources('rights', '/api/v1/rights', controller.v1.rights);
   router.resources('conversations', '/api/v1/conversations', controller.v1.conversations);
   router.resources('groups', '/api/v1/groups', controller.v1.groups);
-  router.resources('applies', '/api/v1/applies', controller.v1.applies);
+  router.resources('applies', '/api/v1/applies', controller.v1.apply);
 };
