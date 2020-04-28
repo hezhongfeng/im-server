@@ -88,7 +88,11 @@ class AddController extends Controller {
 
     // 注意这里需要经过两次查询
     const user = await ctx.model.User.findByPk(ctx.session.user.id);
-    const conversations = await user.getConversations();
+    const conversations = await user.getConversations({
+      where: {
+        type: 'groupchat'
+      }
+    });
 
     const data = [];
     for (const iterator of conversations) {
