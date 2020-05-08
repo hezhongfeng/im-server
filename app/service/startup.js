@@ -7,6 +7,16 @@ class startupService extends Service {
     const hezf = await this.addUser('hezf', '123456');
     const laohe = await this.addUser('laohe', '123456');
     const xiaohe = await this.addUser('xiaohe', '123456');
+    await this.addUser('member1', '123456');
+    await this.addUser('member2', '123456');
+    await this.addUser('member3', '123456');
+    await this.addUser('member4', '123456');
+    await this.addUser('member5', '123456');
+    await this.addUser('member6', '123456');
+    await this.addUser('member7', '123456');
+    await this.addUser('member8', '123456');
+    await this.addUser('member9', '123456');
+    await this.addUser('member10', '123456');
     await this.createConversation({ type: 'chat', userList: [hezf, laohe] });
     await this.createConversation({ type: 'chat', userList: [hezf, xiaohe] });
 
