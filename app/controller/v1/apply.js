@@ -23,9 +23,27 @@ class ApplyController extends Controller {
         toId: iterator.toId,
         fromId: iterator.fromId
       };
-      apply.from = await ctx.model.User.findByPk(apply.fromId);
+      let fromUser = await ctx.model.User.findByPk(apply.fromId);
+      let userInfo = await fromUser.getUserInfo();
+      userInfo = userInfo.get({
+        plain: true
+      });
+      fromUser = fromUser.get({
+        plain: true
+      });
+      fromUser.userInfo = userInfo;
+      apply.from = fromUser;
       if (apply.type === 'user') {
-        apply.to = await ctx.model.User.findByPk(apply.toId);
+        let toUser = await ctx.model.User.findByPk(apply.toId);
+        userInfo = await toUser.getUserInfo();
+        userInfo = userInfo.get({
+          plain: true
+        });
+        toUser = toUser.get({
+          plain: true
+        });
+        toUser.userInfo = userInfo;
+        apply.to = toUser;
       } else if (apply.type === 'group') {
         apply.to = await ctx.model.Group.findByPk(apply.toId);
       }
