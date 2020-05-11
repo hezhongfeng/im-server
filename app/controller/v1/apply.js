@@ -5,11 +5,32 @@ class ApplyController extends Controller {
   async index() {
     const { ctx } = this;
 
-    const data = await ctx.model.Apply.findAndCountAll({
+    const result = await ctx.model.Apply.findAndCountAll({
       where: {
         toId: ctx.session.user.id
       }
     });
+
+    const data = {
+      count: result.count,
+      rows: []
+    };
+
+    for (const iterator of result.rows) {
+      const apply = {
+        type: iterator.type,
+        id: iterator.id,
+        toId: iterator.toId,
+        fromId: iterator.fromId
+      };
+      apply.from = await ctx.model.User.findByPk(apply.fromId);
+      if (apply.type === 'user') {
+        apply.to = await ctx.model.User.findByPk(apply.toId);
+      } else if (apply.type === 'group') {
+        apply.to = await ctx.model.Group.findByPk(apply.toId);
+      }
+      data.rows.push(apply);
+    }
 
     ctx.body = {
       statusCode: '0',
