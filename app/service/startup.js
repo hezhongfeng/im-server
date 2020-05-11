@@ -7,7 +7,12 @@ class startupService extends Service {
     const hezf = await this.addUser('hezf', '123456');
     const laohe = await this.addUser('laohe', '123456');
     const xiaohe = await this.addUser('xiaohe', '123456');
-    await this.addUser('member1', '123456');
+    const member1 = await this.addUser('member1', '123456');
+    this.createApply({
+      type: 'user',
+      fromId: member1.id,
+      toId: hezf.id
+    });
     await this.addUser('member2', '123456');
     await this.addUser('member3', '123456');
     await this.addUser('member4', '123456');
@@ -21,7 +26,17 @@ class startupService extends Service {
     await this.createConversation({ type: 'chat', userList: [hezf, xiaohe] });
 
     await this.createGroup({ name: '谈笑有鸿儒', disabled: false, userList: [hezf, laohe], owner: hezf });
-    await this.createGroup({ name: '往来无白丁', disabled: false, userList: [laohe, hezf, xiaohe], owner: laohe });
+    const group2 = await this.createGroup({
+      name: '往来无白丁',
+      disabled: false,
+      userList: [laohe, hezf, xiaohe],
+      owner: laohe
+    });
+    this.createApply({
+      type: 'group',
+      fromId: member1.id,
+      toId: group2.id
+    });
     let role = await this.addRole('管理员', 'admin');
     let right = await this.addRight('管理', 'admin');
     role.addRight(right);
@@ -135,6 +150,19 @@ class startupService extends Service {
     for (const user of userList) {
       conversation.addUser(user);
     }
+  }
+
+  // 创建申请
+  async createApply({ type, fromId, toId }) {
+    const { ctx } = this;
+
+    await ctx.model.Apply.findOrCreate({
+      where: {
+        type,
+        fromId,
+        toId
+      }
+    });
   }
 }
 
