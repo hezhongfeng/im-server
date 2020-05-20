@@ -7,7 +7,7 @@ class ApplyController extends Controller {
 
     const result = await ctx.model.Apply.findAndCountAll({
       where: {
-        toId: ctx.session.user.id,
+        userId: ctx.session.user.id,
         hasHandled: false
       }
     });
@@ -63,12 +63,10 @@ class ApplyController extends Controller {
     const { ctx } = this;
     const { type, toId } = ctx.request.body;
 
-    const apply = await ctx.model.Apply.findOrCreate({
-      where: {
-        type: type,
-        fromId: ctx.session.user.id,
-        toId: toId
-      }
+    const apply = await ctx.service.apply.create({
+      type: type,
+      fromId: ctx.session.user.id,
+      toId: toId
     });
 
     ctx.body = {
