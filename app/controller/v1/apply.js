@@ -7,7 +7,8 @@ class ApplyController extends Controller {
 
     const result = await ctx.model.Apply.findAndCountAll({
       where: {
-        toId: ctx.session.user.id
+        toId: ctx.session.user.id,
+        hasHandled: false
       }
     });
 
