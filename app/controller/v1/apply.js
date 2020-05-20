@@ -110,8 +110,8 @@ class ApplyController extends Controller {
   // 同意或者拒绝进群
   async applyGroup() {
     const { ctx, service } = this;
-    const { approval } = ctx.request.body;
-    const apply = await ctx.model.Apply.findByPk(ctx.params.id);
+    const { id, approval } = ctx.request.body;
+    const apply = await ctx.model.Apply.findByPk(id);
     let group = null;
     let errorMessage = '';
     let statusCode = '0';
