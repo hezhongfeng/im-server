@@ -11,12 +11,23 @@ class AddController extends Controller {
       where: { username: searchValue },
       attributes: { exclude: ['password'] }
     });
+    const userInstances = [];
+    for (const user of users) {
+      const userInfo = await user.getUserInfo();
+      const userInstance = user.get({
+        plain: true
+      });
+      userInstance.userInfo = userInfo.get({
+        plain: true
+      });
+      userInstances.push(userInstance);
+    }
 
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
       data: {
-        users,
+        users: userInstances,
         groups
       }
     };
