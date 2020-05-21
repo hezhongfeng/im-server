@@ -25,8 +25,8 @@ class startupService extends Service {
     await this.addUser('member8', '123456');
     await this.addUser('member9', '123456');
     await this.addUser('member10', '123456');
-    await this.createConversation({ type: 'chat', userList: [hezf, laohe] });
-    await this.createConversation({ type: 'chat', userList: [hezf, xiaohe] });
+    await this.createFriendRelationship(hezf, laohe);
+    await this.createFriendRelationship(hezf, xiaohe);
 
     const group1 = await this.createGroup({ name: '谈笑有鸿儒', disabled: false, userList: [hezf, laohe], owner: hezf });
     await ctx.service.apply.create({
@@ -121,39 +121,14 @@ class startupService extends Service {
     return right;
   }
 
-  // 创建会话
-  async createConversation({ type, userList }) {
+  // 创建好友关系
+  async createFriendRelationship(user, friend) {
     const { ctx } = this;
-    if (userList.length <= 1) {
-      return;
-    }
-    // 判断是否已经有了 会话
-    const user1Conversations = await userList[0].getConversations({
-      where: {
-        type: type
-      }
-    });
-    const user2Conversations = await userList[1].getConversations({
-      where: {
-        type: type
-      }
-    });
 
-    for (const user1Conversation of user1Conversations) {
-      for (const user2Conversation of user2Conversations) {
-        if (user1Conversation.id === user2Conversation.id) {
-          return;
-        }
-      }
-    }
-
-    const conversation = await ctx.model.Conversation.create({
-      type: type
+    await ctx.service.friend.create({
+      userId: user.id,
+      friendId: friend.id
     });
-
-    for (const user of userList) {
-      conversation.addUser(user);
-    }
   }
 }
 
