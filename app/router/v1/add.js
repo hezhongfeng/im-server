@@ -7,8 +7,4 @@ module.exports = app => {
   router.post('/api/v1/add/friend', controller.v1.apply.applyFriend);
   // 同意申请进群
   router.post('/api/v1/add/group', controller.v1.apply.applyGroup);
-  // 通讯录
-  router.get('/api/v1/mail-list', controller.v1.add.getMailList);
-  // 群组
-  router.get('/api/v1/group-list', controller.v1.add.getGroupList);
 };
