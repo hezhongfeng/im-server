@@ -3,12 +3,12 @@ const Controller = require('egg').Controller;
 class AddController extends Controller {
   async search() {
     const { ctx } = this;
-
+    const { Op } = this.app.Sequelize;
     const { searchValue } = ctx.request.body;
 
-    const groups = await ctx.model.Group.findAll({ where: { name: searchValue } });
+    const groups = await ctx.model.Group.findAll({ where: { name: { [Op.like]: '%' + searchValue + '%' } } });
     const users = await ctx.model.User.findAll({
-      where: { username: searchValue },
+      where: { username: { [Op.like]: '%' + searchValue + '%' } },
       attributes: { exclude: ['password'] }
     });
     const userInstances = [];
