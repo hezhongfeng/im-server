@@ -8,29 +8,29 @@ class ConversationController extends Controller {
 
     // 注意这里需要经过两次查询
     const user = await ctx.model.User.findByPk(ctx.session.user.id);
-    let conversations = await user.getConversations();
+    const conversations = await user.getConversations();
 
-    let data = [];
+    const data = [];
     for (const iterator of conversations) {
-      let conversation = {
+      const conversation = {
         id: iterator.id,
         type: iterator.type,
-        updatedAt: iterator.updatedAt,
+        updatedAt: iterator.updatedAt
       };
       if (conversation.type === 'chat') {
-        let users = await iterator.getUsers({
+        const users = await iterator.getUsers({
           where: {
             id: {
-              [Op.ne]: ctx.session.user.id,
-            },
-          },
+              [Op.ne]: ctx.session.user.id
+            }
+          }
         });
         conversation.targetId = users.pop().id;
       } else if (conversation.type === 'groupchat') {
-        let group = await ctx.model.Group.findOne({
+        const group = await ctx.model.Group.findOne({
           where: {
-            conversationId: iterator.id,
-          },
+            conversationId: iterator.id
+          }
         });
         conversation.targetId = group.id;
       }
@@ -41,7 +41,7 @@ class ConversationController extends Controller {
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: data,
+      data: data
     };
   }
 }
