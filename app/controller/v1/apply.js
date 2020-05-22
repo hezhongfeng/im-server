@@ -62,16 +62,41 @@ class ApplyController extends Controller {
   async create() {
     const { ctx } = this;
     const { type, toId } = ctx.request.body;
+    let errorMessage = null;
+    let isExist = null;
+    let apply = null;
+    let statusCode = '0';
 
-    const apply = await ctx.service.apply.create({
-      type: type,
-      fromId: ctx.session.user.id,
-      toId: toId
-    });
+    if (type === 'user') {
+      isExist = await ctx.service.friend.isFriend({
+        userId: ctx.session.user.id,
+        friendId: toId
+      });
+      if (isExist) {
+        errorMessage = '你们已经是好友关系了';
+        statusCode = '1';
+      }
+    } else if (type === 'group') {
+      const group = await ctx.model.Group.findByPk(toId);
+      const users = await group.getUsers();
+      isExist = users.find(item => item.id === ctx.session.user.id);
+      if (isExist) {
+        statusCode = '1';
+        errorMessage = '你们已经是群中的一员了';
+      }
+    }
+
+    if (!isExist) {
+      apply = await ctx.service.apply.create({
+        type: type,
+        fromId: ctx.session.user.id,
+        toId: toId
+      });
+    }
 
     ctx.body = {
-      statusCode: '0',
-      errorMessage: null,
+      statusCode,
+      errorMessage,
       data: apply
     };
   }

@@ -29,6 +29,21 @@ class ApplyService extends Service {
 
     return result;
   }
+
+  async isFriend({ userId, friendId }) {
+    const { ctx } = this;
+    // 选取较小的作为userId插入数据
+    const temp = userId;
+    userId = temp < friendId ? temp : friendId;
+    friendId = temp < friendId ? friendId : temp;
+
+    return await ctx.model.Friend.findOne({
+      where: {
+        userId,
+        friendId
+      }
+    });
+  }
 }
 
 module.exports = ApplyService;
