@@ -103,11 +103,12 @@ class ApplyController extends Controller {
 
   // 同意或者拒绝加为好友
   async applyFriend() {
-    const { ctx, service } = this;
+    const { ctx } = this;
     const { id, approval } = ctx.request.body;
     const apply = await ctx.model.Apply.findByPk(id);
     let errorMessage = '';
     let statusCode = '0';
+    let data = null;
 
     if (!apply) {
       errorMessage = '参数错误';
@@ -116,7 +117,12 @@ class ApplyController extends Controller {
         errorMessage = '无此权限';
         statusCode = '2';
       } else {
-        service.apply.approvalAddFriend({ fromId: apply.fromId, toId: apply.toId });
+        // data = await service.apply.approvalAddFriend({ fromId: apply.fromId, toId: apply.toId });
+        const [friend] = await ctx.service.friend.create({
+          userId: apply.fromId,
+          friendId: apply.toId
+        });
+        data = friend;
       }
     }
 
@@ -126,7 +132,7 @@ class ApplyController extends Controller {
     ctx.body = {
       statusCode,
       errorMessage,
-      data: null
+      data
     };
   }
 

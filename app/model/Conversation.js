@@ -24,7 +24,7 @@ module.exports = app => {
     app.model.Conversation.hasMany(app.model.Message);
 
     // Many-To-Many associations
-    app.model.Conversation.belongsToMany(app.model.User, { through: 'user_conversation' });
+    // app.model.Conversation.belongsToMany(app.model.User, { through: 'user_conversation' });
   };
 
   return Conversation;

@@ -89,7 +89,6 @@ class startupService extends Service {
     });
     await group.setConversation(conversation);
     for (const user of userList) {
-      await conversation.addUser(user);
       await group.addUser(user);
     }
     return group;

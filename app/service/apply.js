@@ -21,39 +21,6 @@ class ApplyService extends Service {
     return apply;
   }
 
-  async approvalAddFriend({ fromId, toId }) {
-    const ids = [];
-    const fromUser = await this.ctx.model.User.findByPk(fromId);
-    const fromUserConversations = await fromUser.getConversations({
-      where: {
-        type: 'chat'
-      }
-    });
-    for (const iterator of fromUserConversations) {
-      ids.push(iterator.id);
-    }
-
-    const toUser = await this.ctx.model.User.findByPk(toId);
-    const toUserConversations = await toUser.getConversations({
-      where: {
-        type: 'chat'
-      }
-    });
-    for (const iterator of toUserConversations) {
-      // 判断是否已经有了 会话
-      if (ids.some(id => id === iterator.id)) {
-        return;
-      }
-    }
-    const conversation = await this.ctx.model.Conversation.create({
-      type: 'chat'
-    });
-
-    conversation.addUser(fromUser);
-    conversation.addUser(toUser);
-    await conversation.save();
-  }
-
   async approvalAddGroup({ fromId, group }) {
     const ids = [];
     const fromUser = await this.ctx.model.User.findByPk(fromId);

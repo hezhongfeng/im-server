@@ -10,5 +10,10 @@ module.exports = app => {
     }
   });
 
+  Friend.associate = function() {
+    // One-To-One associations
+    app.model.Friend.belongsTo(app.model.Conversation);
+  };
+
   return Friend;
 };

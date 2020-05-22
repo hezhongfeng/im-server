@@ -1,6 +1,6 @@
 const Service = require('egg').Service;
 
-class ApplyService extends Service {
+class FriendService extends Service {
   async create({ userId, friendId }) {
     const { ctx } = this;
 
@@ -10,24 +10,62 @@ class ApplyService extends Service {
     friendId = temp < friendId ? friendId : temp;
 
     // result 是一个数组 [friend, created]
-    const result = await ctx.model.Friend.findOrCreate({
+    const [friend, created] = await ctx.model.Friend.findOrCreate({
       where: {
         userId,
         friendId
       }
     });
     // 申请会话
-    if (result.created) {
+    if (created) {
       const conversation = await ctx.model.Conversation.create({
         type: 'chat'
       });
-      const user = await ctx.model.User.findByPk(userId);
-      const friend = await ctx.model.User.findByPk(friendId);
-      conversation.addUser(user);
-      conversation.addUser(friend);
+      await friend.setConversation(conversation);
     }
 
-    return result;
+    return [friend, created];
+  }
+
+  async getFriends({ userId }) {
+    const { ctx } = this;
+    const { Op } = this.app.Sequelize;
+
+    const friends = await ctx.model.Friend.findAll({
+      where: {
+        [Op.or]: [
+          {
+            userId: userId
+          },
+          {
+            friendId: userId
+          }
+        ]
+      }
+    });
+
+    const data = [];
+
+    for (const iterator of friends) {
+      const userId = iterator.userId === ctx.session.user.id ? iterator.friendId : iterator.userId;
+      let user = await ctx.model.User.findByPk(userId);
+      let userInfo = await user.getUserInfo();
+      let conversation = await iterator.getConversation();
+      userInfo = userInfo.get({
+        plain: true
+      });
+      user = user.get({
+        plain: true
+      });
+      conversation = conversation.get({
+        plain: true
+      });
+      user.userInfo = userInfo;
+      user.conversation = conversation;
+      data.push(user);
+    }
+
+    return data;
   }
 
   async isFriend({ userId, friendId }) {
@@ -46,4 +84,4 @@ class ApplyService extends Service {
   }
 }
 
-module.exports = ApplyService;
+module.exports = FriendService;
