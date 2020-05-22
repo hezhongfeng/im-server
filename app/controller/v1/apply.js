@@ -117,12 +117,16 @@ class ApplyController extends Controller {
         errorMessage = '无此权限';
         statusCode = '2';
       } else {
-        // data = await service.apply.approvalAddFriend({ fromId: apply.fromId, toId: apply.toId });
         const [friend] = await ctx.service.friend.create({
           userId: apply.fromId,
           friendId: apply.toId
         });
-        data = friend;
+        data = friend.get({
+          plain: true
+        });
+        data.target = {
+          id: ctx.session.user.id === friend.userId ? friend.friendId : friend.userId
+        };
       }
     }
 
@@ -163,7 +167,7 @@ class ApplyController extends Controller {
     ctx.body = {
       statusCode,
       errorMessage,
-      data: null
+      data: group
     };
   }
 }
