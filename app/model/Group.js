@@ -13,8 +13,15 @@ module.exports = app => {
     introduction: {
       type: STRING
     },
+    // 是否解散
     disabled: {
-      type: BOOLEAN
+      type: BOOLEAN,
+      defaultValue: false
+    },
+    // 是否禁言
+    mute: {
+      type: BOOLEAN,
+      defaultValue: false
     },
     ownerId: {
       type: INTEGER,
@@ -22,7 +29,7 @@ module.exports = app => {
     }
   });
 
-  Group.associate = function() {
+  Group.associate = function () {
     // One-To-One associations
     app.model.Group.belongsTo(app.model.Conversation);
 
