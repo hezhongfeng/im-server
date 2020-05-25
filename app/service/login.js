@@ -24,7 +24,8 @@ class LoginService extends Service {
       });
       user.setUserInfo(userInfo);
       ctx.session.user = {
-        id: user.id
+        id: user.id,
+        roles:  await user.getRoles().map(item => item.keyName)
       };
       const object = await service.user.getUserAttribute();
       ctx.body = {
@@ -58,7 +59,8 @@ class LoginService extends Service {
         return;
       }
       ctx.session.user = {
-        id: user.id
+        id: user.id,
+        roles:  await user.getRoles().map(item => item.keyName)
       };
       const object = await service.user.getUserAttribute();
       ctx.body = {
