@@ -50,6 +50,7 @@ class startupService extends Service {
     role.addRight(right);
     right = await this.addRight('发言', 'speak');
     role.addRight(right);
+    hezf.addRole(role);
   }
 
   async addUser(username, password) {
