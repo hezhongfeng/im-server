@@ -5,6 +5,7 @@ module.exports = app => {
   router.post('/api/v1/login', controller.v1.login.login);
   router.post('/api/v1/logout', controller.v1.login.logout);
   router.post('/api/v1/signup', controller.v1.login.signup);
+  router.get('/api/v1/currentUser', controller.v1.login.currentUser);
 
   // github登录授权
   const github = app.passport.authenticate('github', { successRedirect: '/' });

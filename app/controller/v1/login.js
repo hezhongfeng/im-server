@@ -68,6 +68,17 @@ class LoginController extends Controller {
       data: null
     };
   }
+
+  async currentUser() {
+    const { ctx, service } = this;
+    const user = await ctx.model.User.findByPk(ctx.session.user.id);
+    const object = await service.user.getUserAttribute();
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: Object.assign(object, { id: user.id })
+    };
+  }
 }
 
 module.exports = LoginController;
