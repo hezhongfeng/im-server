@@ -3,11 +3,18 @@ const Controller = require('egg').Controller;
 class ApplyController extends Controller {
   async rolesIndex() {
     const { ctx } = this;
+    const pageSize = Number(ctx.query.pageSize);
+    const pageNumber = Number(ctx.query.pageNumber);
+
+    const option = {
+      offset: pageSize * (pageNumber - 1),
+      limit: pageSize
+    };
 
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: null
+      data: await ctx.model.Role.findAndCountAll(option)
     };
   }
 
