@@ -66,8 +66,42 @@ class ApplyController extends Controller {
     };
   }
 
-  async groupsUpdate() {
+  async groupCreate() {
     const { ctx } = this;
+
+    let group = await ctx.model.Group.findOne({ where: { name } });
+    if (group) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '此群组已被创建',
+        data: null
+      };
+      return;
+    }
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
+
+  async groupsDisabled() {
+    const { ctx } = this;
+    const { disabled, id } = ctx.request.body;
+
+    let group = await ctx.model.Group.findByPk(id);
+    if (!group) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '无此群组',
+        data: null
+      };
+    }
+
+    group.disabled = disabled;
+
+    await group.save();
 
     ctx.body = {
       statusCode: '0',

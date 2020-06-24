@@ -7,7 +7,7 @@ module.exports = app => {
 
   // 群组列表
   router.get('/api/v1/admin/groups', controller.v1.admin.groupsIndex);
-  router.put('/api/v1/admin/groups', controller.v1.admin.groupsUpdate);
+  router.put('/api/v1/admin/groups/disabled', controller.v1.admin.groupsDisabled);
 
   // 用户列表
   router.get('/api/v1/admin/users', controller.v1.admin.usersIndex);
