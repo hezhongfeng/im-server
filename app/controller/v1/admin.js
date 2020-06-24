@@ -40,7 +40,7 @@ class ApplyController extends Controller {
       if (sorter.hasOwnProperty(key)) {
         console.log(key);
         if (key === 'updatedAt') {
-          const createdAt = ['created_at'];
+          const createdAt = ['updated_at'];
           if (sorter[key] === 'descend') {
             createdAt.push('DESC');
           }
@@ -66,18 +66,22 @@ class ApplyController extends Controller {
     };
   }
 
-  async groupCreate() {
+  async groupsMute() {
     const { ctx } = this;
+    const { mute, id } = ctx.request.body;
 
-    let group = await ctx.model.Group.findOne({ where: { name } });
-    if (group) {
+    let group = await ctx.model.Group.findByPk(id);
+    if (!group) {
       ctx.body = {
         statusCode: '1',
-        errorMessage: '此群组已被创建',
+        errorMessage: '无此群组',
         data: null
       };
-      return;
     }
+
+    group.mute = mute;
+
+    await group.save();
 
     ctx.body = {
       statusCode: '0',
