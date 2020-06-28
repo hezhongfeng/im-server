@@ -11,20 +11,25 @@ class ApplyController extends Controller {
       limit: pageSize
     };
 
+    const data = await ctx.model.Role.findAndCountAll(option);
+
+    for (let role of data.rows) {
+      let rights = await role.getRights();
+      for (let right of rights) {
+        right = right.get({
+          plain: true
+        });
+      }
+      role = role.get({
+        plain: true
+      });
+      role.rights = rights;
+    }
+
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
-      data: await ctx.model.Role.findAndCountAll(option)
-    };
-  }
-
-  async rolesUpdate() {
-    const { ctx } = this;
-
-    ctx.body = {
-      statusCode: '0',
-      errorMessage: null,
-      data: null
+      data
     };
   }
 
@@ -219,16 +224,6 @@ class ApplyController extends Controller {
     userStatus.disabled = disabled;
 
     await userStatus.save();
-
-    ctx.body = {
-      statusCode: '0',
-      errorMessage: null,
-      data: null
-    };
-  }
-
-  async usersUpdate() {
-    const { ctx } = this;
 
     ctx.body = {
       statusCode: '0',
