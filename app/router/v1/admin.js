@@ -12,5 +12,6 @@ module.exports = app => {
 
   // 用户列表
   router.get('/api/v1/admin/users', controller.v1.admin.usersIndex);
-  router.put('/api/v1/admin/users', controller.v1.admin.usersUpdate);
+  router.put('/api/v1/admin/users/disabled', controller.v1.admin.usersDisabled);
+  router.put('/api/v1/admin/users/mute', controller.v1.admin.usersMute);
 };

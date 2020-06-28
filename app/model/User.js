@@ -17,6 +17,7 @@ module.exports = app => {
   User.associate = function() {
     // One-To-One associations
     app.model.User.hasOne(app.model.UserInfo);
+    app.model.User.hasOne(app.model.UserStatus);
 
     // One-To-Many associations
     app.model.User.hasMany(app.model.Apply);
