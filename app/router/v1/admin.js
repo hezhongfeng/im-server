@@ -1,6 +1,11 @@
 module.exports = app => {
   const { router, controller } = app;
 
+  // 权限列表
+  router.get('/api/v1/admin/rights', controller.v1.admin.rightsIndex);
+  router.post('/api/v1/admin/rights', controller.v1.admin.rightsCreate);
+  router.delete('/api/v1/admin/rights', controller.v1.admin.rightsDelete);
+
   // 角色列表
   router.get('/api/v1/admin/roles', controller.v1.admin.rolesIndex);
 

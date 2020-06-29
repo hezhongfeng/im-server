@@ -1,6 +1,74 @@
 const Controller = require('egg').Controller;
 
 class ApplyController extends Controller {
+  async rightsIndex() {
+    const { ctx } = this;
+    const pageSize = Number(ctx.query.pageSize);
+    const pageNumber = Number(ctx.query.pageNumber);
+
+    const option = {
+      offset: pageSize * (pageNumber - 1),
+      limit: pageSize
+    };
+
+    const data = await ctx.model.Right.findAndCountAll(option);
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data
+    };
+  }
+
+  async rightsCreate() {
+    const { ctx } = this;
+    const { name, keyName, desc = '' } = ctx.request.body;
+
+    let right = await ctx.model.Right.findOne({ where: { keyName } });
+    if (right) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '已有此权限',
+        data: null
+      };
+      return;
+    }
+
+    const data = await ctx.model.Right.create({
+      name,
+      keyName,
+      desc
+    });
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data
+    };
+  }
+
+  async rightsDelete() {
+    const { ctx } = this;
+    const { id } = ctx.request.body;
+
+    let right = await ctx.model.Right.findByPk(id);
+    if (!right) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '无此权限',
+        data: null
+      };
+      return;
+    }
+    right.destroy();
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
+
   async rolesIndex() {
     const { ctx } = this;
     const pageSize = Number(ctx.query.pageSize);

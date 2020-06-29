@@ -7,15 +7,16 @@ class startupService extends Service {
 
     let adminRole = await this.addRole('管理员', 'admin');
     let adminRight = await this.addRight('管理', 'admin');
-    adminRole.addRight(adminRight);
 
     let userRole = await this.addRole('用户', 'user');
-    let userRight1 = await this.addRight('登录', 'login');
-    let userRight2 = await this.addRight('发言', 'speak');
-    userRole.addRight(userRight1);
-    userRole.addRight(userRight2);
+    let loginRight = await this.addRight('登录', 'login');
+    let speakRight = await this.addRight('发言', 'speak');
+    adminRole.addRight(adminRight);
+    adminRole.addRight(loginRight);
+    userRole.addRight(loginRight);
+    userRole.addRight(speakRight);
 
-    await this.addUser('admin', '123456', [adminRole, userRole]);
+    await this.addUser('admin', '123456', [adminRole]);
     const hezf = await this.addUser('hezf', '123456', [userRole]);
     const laohe = await this.addUser('laohe', '123456', [userRole]);
     const xiaohe = await this.addUser('xiaohe', '123456', [userRole]);
