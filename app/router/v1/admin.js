@@ -1,21 +1,23 @@
 module.exports = app => {
   const { router, controller } = app;
 
+  const admin = app.middleware.admin();
+
   // 权限列表
-  router.get('/api/v1/admin/rights', controller.v1.admin.rightsIndex);
-  router.post('/api/v1/admin/rights', controller.v1.admin.rightsCreate);
-  router.delete('/api/v1/admin/rights', controller.v1.admin.rightsDelete);
+  router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
+  router.post('/api/v1/admin/rights', admin, controller.v1.admin.rightsCreate);
+  router.delete('/api/v1/admin/rights', admin, controller.v1.admin.rightsDelete);
 
   // 角色列表
-  router.get('/api/v1/admin/roles', controller.v1.admin.rolesIndex);
+  router.get('/api/v1/admin/roles', admin, controller.v1.admin.rolesIndex);
 
   // 群组列表
-  router.get('/api/v1/admin/groups', controller.v1.admin.groupsIndex);
-  router.put('/api/v1/admin/groups/disabled', controller.v1.admin.groupsDisabled);
-  router.put('/api/v1/admin/groups/mute', controller.v1.admin.groupsMute);
+  router.get('/api/v1/admin/groups', admin, controller.v1.admin.groupsIndex);
+  router.put('/api/v1/admin/groups/disabled', admin, controller.v1.admin.groupsDisabled);
+  router.put('/api/v1/admin/groups/mute', admin, controller.v1.admin.groupsMute);
 
   // 用户列表
-  router.get('/api/v1/admin/users', controller.v1.admin.usersIndex);
-  router.put('/api/v1/admin/users/disabled', controller.v1.admin.usersDisabled);
-  router.put('/api/v1/admin/users/mute', controller.v1.admin.usersMute);
+  router.get('/api/v1/admin/users', admin, controller.v1.admin.usersIndex);
+  router.put('/api/v1/admin/users/disabled', admin, controller.v1.admin.usersDisabled);
+  router.put('/api/v1/admin/users/mute', admin, controller.v1.admin.usersMute);
 };
