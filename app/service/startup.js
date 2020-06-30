@@ -141,7 +141,8 @@ class startupService extends Service {
     }
     right = await ctx.model.Right.create({
       name,
-      keyName
+      keyName,
+      desc: '默认权限，请不要操作！！！'
     });
     return right;
   }
