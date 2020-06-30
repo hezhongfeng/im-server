@@ -6,6 +6,7 @@ module.exports = app => {
   // 权限列表
   router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
   router.post('/api/v1/admin/rights', admin, controller.v1.admin.rightsCreate);
+  router.put('/api/v1/admin/rights', admin, controller.v1.admin.rightsUpdate);
   router.delete('/api/v1/admin/rights', admin, controller.v1.admin.rightsDelete);
 
   // 角色列表

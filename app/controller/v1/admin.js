@@ -47,6 +47,33 @@ class ApplyController extends Controller {
     };
   }
 
+  async rightsUpdate() {
+    const { ctx } = this;
+    const { id, name, keyName, desc = '' } = ctx.request.body;
+
+    let right = await ctx.model.Right.findByPk(id);
+    if (!right) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '无此权限',
+        data: null
+      };
+      return;
+    }
+
+    right.name = name;
+    right.keyName = keyName;
+    right.desc = desc;
+
+    await right.save();
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
+
   async rightsDelete() {
     const { ctx } = this;
     const { id } = ctx.request.body;
