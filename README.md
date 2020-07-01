@@ -1,12 +1,10 @@
-# im-server
+<img width="464" src="https://i.loli.net/2020/07/01/AmsnawZ29RbUqk8.png">
 
-IM application, including server and front-end.
-
-![](https://i.loli.net/2020/03/25/63aZFbktpxVTPOe.png)
+即时通讯应用, 包含[服务端](https://github.com/hezhongfeng/im-server)、[管理端](https://github.com/hezhongfeng/im-fe-admin)和[客户端](https://github.com/hezhongfeng/im-fe-vue)
 
 ## 介绍
 
-总结下在 IM 这块的落地实践，使用 `socket.io` 作为 IM 的核心部分，不掺杂公司业务的 IM 通信示例，包含前后端，前端部分`Vue`和`React`都有实现。
+使用 egg 框架，IM 服务的服务端
 
 ## 功能简介
 
