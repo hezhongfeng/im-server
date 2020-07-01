@@ -25,9 +25,9 @@ class LoginService extends Service {
       user.setUserInfo(userInfo);
       ctx.session.user = {
         id: user.id,
-        roles:  await user.getRoles().map(item => item.keyName)
+        roles: await user.getRoles().map(item => item.keyName)
       };
-      const object = await service.user.getUserAttribute();
+      const object = await service.user.getUserAttribute(ctx.session.user.id);
       ctx.body = {
         statusCode: '0',
         errorMessage: null,
@@ -58,15 +58,32 @@ class LoginService extends Service {
         };
         return;
       }
+      const { userInfo, rights, roles } = await service.user.getUserAttribute(user.id);
+
+      // 权限判断
+      if (!rights.some(item => item.keyName === 'login')) {
+        ctx.body = {
+          statusCode: '1',
+          errorMessage: '不具备登录权限'
+        };
+        return;
+      }
+
       ctx.session.user = {
         id: user.id,
-        roles:  await user.getRoles().map(item => item.keyName)
+        roles,
+        rights
       };
-      const object = await service.user.getUserAttribute();
+
       ctx.body = {
         statusCode: '0',
         errorMessage: null,
-        data: Object.assign(object, { id: user.id })
+        data: {
+          userInfo,
+          rights,
+          roles,
+          id: user.id
+        }
       };
     }
   }

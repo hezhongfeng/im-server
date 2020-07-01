@@ -72,7 +72,7 @@ class LoginController extends Controller {
   async currentUser() {
     const { ctx, service } = this;
     const user = await ctx.model.User.findByPk(ctx.session.user.id);
-    const object = await service.user.getUserAttribute();
+    const object = await service.user.getUserAttribute(ctx.session.user.id);
     ctx.body = {
       statusCode: '0',
       errorMessage: null,

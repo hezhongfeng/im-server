@@ -1,9 +1,9 @@
 const Service = require('egg').Service;
 
 class userService extends Service {
-  async getUserAttribute() {
+  async getUserAttribute(id) {
     const { ctx } = this;
-    const user = await ctx.model.User.findByPk(ctx.session.user.id);
+    const user = await ctx.model.User.findByPk(id);
     const userInfo = await user.getUserInfo();
     const roles = await user.getRoles().map(item => {
       delete item.user_role;
