@@ -6,11 +6,13 @@ class startupService extends Service {
     const { ctx } = this;
 
     let adminRole = await this.addRole('管理员', 'admin');
-    let adminRight = await this.addRight('管理', 'admin');
+    let adminRight = await this.addRight('管理', 'admin', '权限已使用，请不要操作！！！');
 
     let userRole = await this.addRole('用户', 'user');
-    let loginRight = await this.addRight('登录', 'login');
-    let speakRight = await this.addRight('发言', 'speak');
+    let loginRight = await this.addRight('登录', 'login', '权限已使用，请不要操作！！！');
+    let speakRight = await this.addRight('发言', 'speak', '权限已使用，请不要操作！！！');
+    this.addRight('配置', 'conf');
+    this.addRight('测试', 'test');
     adminRole.addRight(adminRight);
     adminRole.addRight(loginRight);
     userRole.addRight(loginRight);
@@ -133,7 +135,7 @@ class startupService extends Service {
     return role;
   }
 
-  async addRight(name, keyName) {
+  async addRight(name, keyName, desc = '权限的描述性内容') {
     const { ctx } = this;
     let right = await ctx.model.Right.findOne({ where: { name } });
     if (right) {
@@ -142,7 +144,7 @@ class startupService extends Service {
     right = await ctx.model.Right.create({
       name,
       keyName,
-      desc: '默认权限，请不要操作！！！'
+      desc
     });
     return right;
   }

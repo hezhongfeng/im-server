@@ -3,7 +3,12 @@ module.exports = options => {
     let { path, session } = ctx;
     let whileList = ['/api/v1/signup', '/api/v1/login'];
     if (whileList.indexOf(path) === -1 && !session.user) {
-      ctx.redirect('/login');
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '请登录',
+        data: null
+      };
+      return;
     } else {
       await next();
     }
