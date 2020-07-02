@@ -17,8 +17,13 @@ class UserInfoController extends Controller {
   async update() {
     const { ctx } = this;
     console.log(ctx.request.body);
-    const userInfo = ctx.model.UserInfo.findByPk(ctx.request.body.id);
-    await userInfo.update(ctx.request.body);
+    const { id, nickname, photo, sign } = ctx.request.body;
+    const userInfo = await ctx.model.UserInfo.findByPk(id);
+    await userInfo.update({
+      nickname,
+      photo,
+      sign
+    });
     ctx.body = {
       statusCode: '0',
       errorMessage: null,

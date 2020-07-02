@@ -15,7 +15,7 @@
 5. 在线离线显示
 6. 支持多点同时登录
 7. 支持消息漫游
-8. 百度 UNIT 机器人自动回复
+8. 百度 UNIT 机器人自动回复(todo)
 9. 管理端，进行禁言或者封账号，解散群（我也当一回马化腾）
 
 ## 需求简介
@@ -54,7 +54,7 @@
 
 使用 @vue/cli 搭建 IM 服务的客户端，一个移动端的 H5 项目，集成了开源组件[vue-page-stack](https://github.com/hezhongfeng/vue-page-stack)，实现 IM 的基础功能
 
-## 关系
+## 实体关系
 
 作为一个前端工程师，很多时候的工作是不需要思考实体关系的。但是，就我的实际体验来看，懂得实体关系可以帮助我们更好的理解业务模型。而对产品和业务理解的提升对我们的帮助是非常大的，可以在需求评审的时候发现很多不符合逻辑的地方，这时候能提出来就会主动避免我们在后续的过程中进行反复开发，同时可以和产品侧的同学形成比较良好的互动（而不是互怼）。下面简单罗列下比较重要的实体关系：
 
@@ -170,6 +170,104 @@ ws.onclose = function(evt) {
 
 ## server 端详细说明
 
+下面说下后端项目中我认为几个重要的点，大部分内容需要去 egg 官网查看
+
+### 路由
+
+路由使用了版本号 v1，方便以后升级，一般的增删改查直接使用 restful 的方式比较简单
+
+### 统一鉴权
+
+因为本系统有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
+
+比如管理端的路由`/v1/admin/...`，想在这个系列路由全都添加管理员的鉴权，这时候可以用中间件的方式进行鉴权，下面是在 admin router 中使用中间件的具体例子
+
+```
+module.exports = () => {
+  return async function admin(ctx, next) {
+    let { session } = ctx;
+
+    // 判断admin权限
+    if (session.user && session.user.rights.some(right => right.keyName === 'admin')) {
+      await next();
+    } else {
+      ctx.redirect('/login');
+    }
+  };
+};
+```
+
+### socketio 的中间件
+
+有两个默认的中间件，一个是连接和断开时候调用的 connectionMiddleware，这里用来处理业务逻辑了；另外一个是每次发消息时候调用的 packetMiddleware，这里用来打印 log 了
+
+### 消息
+
+message 的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做如下说明：
+
+```
+const Message = app.model.define('message', {
+  /**
+    * 消息类型：
+    * 0:单聊
+    * 1:群聊
+    */
+  type: {
+    type: STRING
+  },
+  // 消息体
+  body: {
+    type: JSON
+  },
+  fromId: { type: INTEGER },
+  toId: { type: INTEGER }
+});
+```
+
+body 里面存放的是消息体，使用 json 用来存放不同的消息格式：
+
+```
+// 文本消息
+{
+  "type": "txt",
+  "msg":"哈哈哈" //消息内容
+}
+```
+
+```
+// 图片消息
+{
+  "type": "img",
+  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
+  "ext":"jpg",
+  "w":360,    //宽
+  "h":480,    //高
+  "size": 388245
+}
+```
+
+```
+// 视频消息
+{
+  "type": 'video',
+  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
+  "ext":"mp4",
+  "w":360,    //宽
+  "h":480,    //高
+  "size": 388245
+}
+```
+
+```
+// 地理位置消息
+{
+  "type": "loc",
+  "title":"中国 浙江省 杭州市 网商路 599号",    //地理位置title
+  "lng":120.1908686708565,        // 经度
+  "lat":30.18704515647036            // 纬度
+}
+```
+
 ### passport
 
 这个章节的官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普用的 controller 控制的。
@@ -246,84 +344,4 @@ module.exports = async (ctx, user) => {
   }
   return user;
 };
-```
-
-### 统一鉴权
-
-因为本系统有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
-
-比如管理端的路由`/v1/admin/...`，想在这个系列路由全都添加管理员的鉴权，这时候可以用中间件的方式进行鉴权，各种具体的细分权限可以在 controller 层完成，下面是在 router 中使用中间件的例子
-
-```
-module.exports = app => {
-  const gzip = app.middleware.gzip({ threshold: 1024 });
-  app.router.get('/needgzip', gzip, app.controller.handler);
-};
-```
-
-### 消息
-
-message 的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做如下说明：
-
-```
-const Message = app.model.define('message', {
-  /**
-    * 消息类型：
-    * 0:单聊
-    * 1:群聊
-    */
-  type: {
-    type: STRING
-  },
-  // 消息体
-  body: {
-    type: JSON
-  },
-  fromId: { type: INTEGER },
-  toId: { type: INTEGER }
-});
-```
-
-body 里面存放的是消息体，使用 json 用来存放不同的消息格式：
-
-```
-// 文本消息
-{
-  "type": "txt",
-  "msg":"哈哈哈" //消息内容
-}
-```
-
-```
-// 图片消息
-{
-  "type": "img",
-  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
-  "ext":"jpg",
-  "w":360,    //宽
-  "h":480,    //高
-  "size": 388245
-}
-```
-
-```
-// 视频消息
-{
-  "type": 'video',
-  "url": "http://nimtest.nos.netease.com/cbc500e8-e19c-4b0f-834b-c32d4dc1075e",
-  "ext":"mp4",
-  "w":360,    //宽
-  "h":480,    //高
-  "size": 388245
-}
-```
-
-```
-// 地理位置消息
-{
-  "type": "loc",
-  "title":"中国 浙江省 杭州市 网商路 599号",    //地理位置title
-  "lng":120.1908686708565,        // 经度
-  "lat":30.18704515647036            // 纬度
-}
 ```
