@@ -47,8 +47,13 @@ class FriendService extends Service {
     const data = [];
 
     for (const iterator of friends) {
-      const userId = iterator.userId === ctx.session.user.id ? iterator.friendId : iterator.userId;
-      let user = await ctx.model.User.findByPk(userId);
+      const friendId = iterator.userId === userId ? iterator.friendId : iterator.userId;
+      let user = await ctx.model.User.findOne({
+        where: {
+          id: friendId
+        },
+        attributes: { exclude: ['password'] }
+      });
       let userInfo = await user.getUserInfo();
       let conversation = await iterator.getConversation();
       userInfo = userInfo.get({

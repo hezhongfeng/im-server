@@ -5,7 +5,7 @@ class ApplyController extends Controller {
   async index() {
     const { ctx } = this;
 
-    const data = ctx.service.friend.getFriends({ userId: ctx.session.user.id });
+    const data = await ctx.service.friend.getFriends({ userId: ctx.session.user.id });
 
     ctx.body = {
       statusCode: '0',

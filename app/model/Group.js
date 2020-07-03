@@ -8,7 +8,7 @@ module.exports = app => {
     },
     photo: {
       type: STRING,
-      defaultValue: '/public/images/head.png'
+      defaultValue: '/public/images/group.png'
     },
     introduction: {
       type: STRING

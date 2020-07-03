@@ -100,7 +100,7 @@ class startupService extends Service {
   }
 
   // 创建群组
-  async createGroup({ name, disabled, photo = '', userList, owner }) {
+  async createGroup({ name, disabled, userList, owner }) {
     const { ctx } = this;
     let group = await ctx.model.Group.findOne({ where: { name } });
     if (group) {
@@ -111,7 +111,6 @@ class startupService extends Service {
     });
     group = await ctx.model.Group.create({
       name,
-      photo,
       disabled,
       ownerId: owner.id
     });
