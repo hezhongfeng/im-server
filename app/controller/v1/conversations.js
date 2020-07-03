@@ -34,6 +34,20 @@ class ConversationController extends Controller {
       data: data
     };
   }
+
+  async active() {
+    const { ctx } = this;
+    const { id } = ctx.request.body;
+    const conversation = await ctx.model.Conversation.findByPk(id);
+    conversation.activeTime = new Date();
+    await conversation.save();
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
 }
 
 module.exports = ConversationController;
