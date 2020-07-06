@@ -24,15 +24,83 @@ class startupService extends Service {
     const xiaohe = await this.addUser('xiaohe', '123456', [userRole]);
     const member1 = await this.addUser('member1', '123456', [userRole]);
     const member2 = await this.addUser('member2', '123456', [userRole]);
+
+    const member3 = await this.addUser('member3', '123456', [userRole]);
+    const member4 = await this.addUser('member4', '123456', [userRole]);
+    const member5 = await this.addUser('member5', '123456', [userRole]);
+    const member6 = await this.addUser('member6', '123456', [userRole]);
+    const member7 = await this.addUser('member7', '123456', [userRole]);
+    const member8 = await this.addUser('member8', '123456', [userRole]);
+    const member9 = await this.addUser('member9', '123456', [userRole]);
+    const member10 = await this.addUser('member10', '123456', [userRole]);
+    const member11 = await this.addUser('member11', '123456', [userRole]);
+    const member12 = await this.addUser('member12', '123456', [userRole]);
+    const member13 = await this.addUser('member13', '123456', [userRole]);
+    const member14 = await this.addUser('member14', '123456', [userRole]);
+    const member15 = await this.addUser('member15', '123456', [userRole]);
+    const member16 = await this.addUser('member16', '123456', [userRole]);
+    const member17 = await this.addUser('member17', '123456', [userRole]);
+    const member18 = await this.addUser('member18', '123456', [userRole]);
+    const member19 = await this.addUser('member19', '123456', [userRole]);
+    const member20 = await this.addUser('member20', '123456', [userRole]);
+    const member21 = await this.addUser('member21', '123456', [userRole]);
+    const member22 = await this.addUser('member22', '123456', [userRole]);
+    const member23 = await this.addUser('member23', '123456', [userRole]);
+    const member24 = await this.addUser('member24', '123456', [userRole]);
+    const member25 = await this.addUser('member25', '123456', [userRole]);
+    const member26 = await this.addUser('member26', '123456', [userRole]);
+    await this.addUser('member27', '123456', [userRole]);
+    await this.addUser('member28', '123456', [userRole]);
+    await this.addUser('member29', '123456', [userRole]);
+    await this.addUser('member30', '123456', [userRole]);
+
+    await this.createFriendRelationship(hezf, laohe);
+    await this.createFriendRelationship(hezf, xiaohe);
+    await this.createFriendRelationship(hezf, member3);
+    await this.createFriendRelationship(hezf, member4);
+    await this.createFriendRelationship(hezf, member5);
+    await this.createFriendRelationship(hezf, member6);
+    await this.createFriendRelationship(hezf, member7);
+    await this.createFriendRelationship(hezf, member8);
+    await this.createFriendRelationship(hezf, member9);
+    await this.createFriendRelationship(hezf, member10);
+    await this.createFriendRelationship(hezf, member11);
+    await this.createFriendRelationship(hezf, member12);
+    await this.createFriendRelationship(hezf, member13);
+    await this.createFriendRelationship(hezf, member14);
+    await this.createFriendRelationship(hezf, member15);
+    await this.createFriendRelationship(hezf, member16);
+    await this.createFriendRelationship(hezf, member17);
+    await this.createFriendRelationship(hezf, member18);
+    await this.createFriendRelationship(hezf, member19);
+    await this.createFriendRelationship(hezf, member20);
+    await this.createFriendRelationship(hezf, member21);
+    await this.createFriendRelationship(hezf, member22);
+    await this.createFriendRelationship(hezf, member23);
+    await this.createFriendRelationship(hezf, member24);
+    await this.createFriendRelationship(hezf, member25);
+    await this.createFriendRelationship(hezf, member26);
+
+    // 2个好友申请
     await ctx.service.apply.create({
       type: 'user',
       fromId: member1.id,
       toId: hezf.id
     });
-    await this.createFriendRelationship(hezf, laohe);
-    await this.createFriendRelationship(hezf, xiaohe);
+    await ctx.service.apply.create({
+      type: 'user',
+      fromId: member2.id,
+      toId: hezf.id
+    });
 
-    const group1 = await this.createGroup({ name: '谈笑有鸿儒', disabled: false, userList: [hezf, laohe], owner: hezf });
+    const group1 = await this.createGroup({
+      name: '谈笑有鸿儒',
+      disabled: false,
+      userList: [hezf, laohe],
+      owner: hezf
+    });
+
+    // 入群申请
     await ctx.service.apply.create({
       type: 'group',
       fromId: member2.id,
@@ -44,34 +112,6 @@ class startupService extends Service {
       userList: [laohe, hezf, xiaohe],
       owner: hezf
     });
-    await this.addUser('member3', '123456', [userRole]);
-    await this.addUser('member4', '123456', [userRole]);
-    await this.addUser('member5', '123456', [userRole]);
-    await this.addUser('member6', '123456', [userRole]);
-    await this.addUser('member7', '123456', [userRole]);
-    await this.addUser('member8', '123456', [userRole]);
-    await this.addUser('member9', '123456', [userRole]);
-    await this.addUser('member10', '123456', [userRole]);
-    await this.addUser('member11', '123456', [userRole]);
-    await this.addUser('member12', '123456', [userRole]);
-    await this.addUser('member13', '123456', [userRole]);
-    await this.addUser('member14', '123456', [userRole]);
-    await this.addUser('member15', '123456', [userRole]);
-    await this.addUser('member16', '123456', [userRole]);
-    await this.addUser('member17', '123456', [userRole]);
-    await this.addUser('member18', '123456', [userRole]);
-    await this.addUser('member19', '123456', [userRole]);
-    await this.addUser('member20', '123456', [userRole]);
-    await this.addUser('member21', '123456', [userRole]);
-    await this.addUser('member22', '123456', [userRole]);
-    await this.addUser('member23', '123456', [userRole]);
-    await this.addUser('member24', '123456', [userRole]);
-    await this.addUser('member25', '123456', [userRole]);
-    await this.addUser('member26', '123456', [userRole]);
-    await this.addUser('member27', '123456', [userRole]);
-    await this.addUser('member28', '123456', [userRole]);
-    await this.addUser('member29', '123456', [userRole]);
-    await this.addUser('member30', '123456', [userRole]);
   }
 
   async addUser(username, password, roles) {
