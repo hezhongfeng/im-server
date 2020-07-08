@@ -13,7 +13,8 @@ class DefaultController extends Controller {
 
   async getMessages(ctx) {
     const payload = ctx.args[0];
-    ctx.service.im.getMessages(payload);
+    const callBack = ctx.args[1];
+    ctx.service.im.getMessages(payload, callBack);
   }
 }
 

@@ -13,7 +13,7 @@
  */
 const userMap = new Map();
 
-module.exports = (app) => {
+module.exports = app => {
   class Io extends app.Service {
     // 链接用户
     async connect(socket) {
@@ -28,7 +28,7 @@ module.exports = (app) => {
       // });
       // 广播
       this.ctx.socket.broadcast.emit('/v1/user-list-change', {
-        userList,
+        userList
       });
     }
 
@@ -39,7 +39,7 @@ module.exports = (app) => {
       const userList = this.getOnlineUserList();
       // 广播
       this.ctx.socket.broadcast.emit('/v1/cs/user-list-change', {
-        userList,
+        userList
       });
     }
 
@@ -50,7 +50,7 @@ module.exports = (app) => {
       } else {
         userMap.set(userId, {
           sockets: [socketId],
-          messages: [],
+          messages: []
         });
       }
     }
@@ -104,7 +104,7 @@ module.exports = (app) => {
       let newMessage = await ctx.model.Message.create({
         body: message.body,
         fromId: message.fromId,
-        toId: message.toId,
+        toId: message.toId
       });
 
       await conversation.addMessage(newMessage);
@@ -119,27 +119,35 @@ module.exports = (app) => {
         fromId: newMessage.fromId,
         toId: newMessage.toId,
         createdAt: newMessage.createdAt,
-        conversationId: message.conversationId,
+        conversationId: message.conversationId
       };
     }
 
-    async getMessages({ conversationId, pageSize = 10, pageNumber = 1 }) {
+    async getMessages({ conversationId, pageSize = 10, pageNumber = 1 }, callBack) {
       const { ctx } = this;
       // 计数查询
       let result = await ctx.model.Message.findAndCountAll({
         where: {
-          conversationId: conversationId,
+          conversationId: conversationId
         },
         offset: pageSize * (pageNumber - 1),
         limit: pageSize,
         order: [['created_at', 'DESC']]
       });
-      ctx.socket.emit('/v1/im/get-messages', {
+
+      // ctx.socket.emit('/v1/im/get-messages', {
+      //   conversationId,
+      //   pageSize,
+      //   pageNumber,
+      //   count: result.count,
+      //   messages: result.rows
+      // });
+      callBack({
         conversationId,
         pageSize,
         pageNumber,
         count: result.count,
-        messages: result.rows,
+        messages: result.rows
       });
     }
   }
