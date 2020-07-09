@@ -77,7 +77,8 @@ module.exports = appInfo => {
   };
 
   config.multipart = {
-    mode: 'file'
+    mode: 'file',
+    fileExtensions: ['.mov']
   };
 
   config.bodyParser = {
