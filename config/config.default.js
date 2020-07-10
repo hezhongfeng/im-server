@@ -63,7 +63,7 @@ module.exports = appInfo => {
 
   config.multipart = {
     mode: 'file',
-    fileSize: '5mb',
+    fileSize: '3mb',
     fileExtensions: ['.mov']
   };
 
