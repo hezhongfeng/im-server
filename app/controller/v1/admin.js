@@ -147,7 +147,39 @@ class ApplyController extends Controller {
     };
   }
 
-  async updateUserRoles() {}
+  async createRoles() {
+    const { ctx } = this;
+    const { name, keyName, desc, rightIds } = ctx.request.body;
+    let role = await ctx.model.Role.findOne({
+      where: {
+        keyName
+      }
+    });
+    if (role) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '已有此角色',
+        data: null
+      };
+      return;
+    }
+    role = await ctx.model.Role.create({
+      name,
+      keyName,
+      desc
+    });
+    const rights = [];
+
+    for (const id of rightIds) {
+      rights.push(await ctx.model.Right.findByPk(id));
+    }
+    await role.setRights(rights);
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: role
+    };
+  }
 
   async groupsIndex() {
     const { ctx } = this;
