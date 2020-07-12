@@ -64,8 +64,6 @@ class RolesController extends Controller {
 
     ctx.body = await user.getRoles();
   }
-
-  async updateUserRoles() {}
 }
 
 module.exports = RolesController;
