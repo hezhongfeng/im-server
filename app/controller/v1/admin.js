@@ -152,15 +152,24 @@ class ApplyController extends Controller {
   async createRoles() {
     const { ctx } = this;
     const { name, keyName, desc, rightIds } = ctx.request.body;
+    const { Op } = this.app.Sequelize;
+
     let role = await ctx.model.Role.findOne({
       where: {
-        keyName
+        [Op.or]: [
+          {
+            name
+          },
+          {
+            keyName
+          }
+        ]
       }
     });
     if (role) {
       ctx.body = {
         statusCode: '1',
-        errorMessage: '已有此角色',
+        errorMessage: '已有此角色名称或者关键字',
         data: null
       };
       return;
