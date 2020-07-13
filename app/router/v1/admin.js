@@ -13,7 +13,7 @@ module.exports = app => {
   // 角色列表
   router.get('/api/v1/admin/roles', admin, controller.v1.admin.rolesIndex);
   router.post('/api/v1/admin/roles', admin, controller.v1.admin.createRoles);
-  router.put('/api/v1/admin/roles-rights', admin, controller.v1.admin.updateRoleRights);
+  router.put('/api/v1/admin/roles', admin, controller.v1.admin.updateRoles);
 
   // 群组列表
   router.get('/api/v1/admin/groups', admin, controller.v1.admin.groupsIndex);

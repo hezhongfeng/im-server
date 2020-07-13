@@ -128,16 +128,18 @@ class ApplyController extends Controller {
     };
   }
 
-  async updateRoleRights() {
+  async updateRoles() {
     const { ctx } = this;
-    const { id, rightIds } = ctx.request.body;
+    const { id, rightIds, name, keyName, desc } = ctx.request.body;
     const role = await ctx.model.Role.findByPk(id);
     const rights = [];
 
     for (const id of rightIds) {
       rights.push(await ctx.model.Right.findByPk(id));
     }
-
+    role.name = name;
+    role.keyName = keyName;
+    role.desc = desc;
     await role.setRights(rights);
     await role.save();
     ctx.body = {
