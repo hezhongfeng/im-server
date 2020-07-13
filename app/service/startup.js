@@ -130,9 +130,7 @@ class startupService extends Service {
       photo: `/public/images/head${Math.floor(Math.random() * 9 + 1)}.png`,
       nickname: username
     });
-    const userStatus = await ctx.model.UserStatus.create();
     await user.setUserInfo(userInfo);
-    await user.setUserStatus(userStatus);
     for (const role of roles) {
       await user.addRole(role);
     }

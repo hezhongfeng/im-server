@@ -295,10 +295,14 @@ class ApplyController extends Controller {
 
   async usersIndex() {
     const { ctx } = this;
+    const { Op } = this.app.Sequelize;
 
     const pageSize = Number(ctx.query.pageSize);
     const pageNumber = Number(ctx.query.pageNumber);
     const sorter = JSON.parse(ctx.query.sorter);
+    const where = {};
+    const username = ctx.query.username || '';
+    const provider = ctx.query.provider || '';
     const order = [];
 
     for (const key in sorter) {
@@ -314,11 +318,20 @@ class ApplyController extends Controller {
       }
     }
 
+    if (username) {
+      where.username = { [Op.like]: '%' + username + '%' };
+    }
+
+    if (provider) {
+      where.provider = provider;
+    }
+
     const option = {
       offset: pageSize * (pageNumber - 1),
       limit: pageSize,
       order: order,
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password'] },
+      where
     };
 
     const data = await ctx.model.User.findAndCountAll(option);
@@ -334,49 +347,17 @@ class ApplyController extends Controller {
           plain: true
         });
       }
-      let userStatus = await user.getUserStatus();
-      userStatus = userStatus.get({
-        plain: true
-      });
       user = user.get({
         plain: true
       });
       user.userInfo = userInfo;
       user.roles = roles;
-      user.userStatus = userStatus;
     }
 
     ctx.body = {
       statusCode: '0',
       errorMessage: null,
       data
-    };
-  }
-
-  async usersMute() {
-    const { ctx } = this;
-    const { mute, id } = ctx.request.body;
-
-    let user = await ctx.model.User.findByPk(id);
-    if (!user) {
-      ctx.body = {
-        statusCode: '1',
-        errorMessage: '无此用户',
-        data: null
-      };
-      return;
-    }
-
-    const userStatus = await user.getUserStatus();
-
-    userStatus.mute = mute;
-
-    await userStatus.save();
-
-    ctx.body = {
-      statusCode: '0',
-      errorMessage: null,
-      data: null
     };
   }
 
@@ -403,32 +384,6 @@ class ApplyController extends Controller {
     await user.setRoles(roles);
 
     await user.save();
-
-    ctx.body = {
-      statusCode: '0',
-      errorMessage: null,
-      data: null
-    };
-  }
-
-  async usersDisabled() {
-    const { ctx } = this;
-    const { disabled, id } = ctx.request.body;
-
-    let user = await ctx.model.User.findByPk(id);
-    if (!user) {
-      ctx.body = {
-        statusCode: '1',
-        errorMessage: '无此用户',
-        data: null
-      };
-      return;
-    }
-
-    const userStatus = await user.getUserStatus();
-    userStatus.disabled = disabled;
-
-    await userStatus.save();
 
     ctx.body = {
       statusCode: '0',
