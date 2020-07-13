@@ -192,6 +192,21 @@ class ApplyController extends Controller {
     };
   }
 
+  async deleteRoles() {
+    const { ctx } = this;
+    const { ids } = ctx.request.body;
+
+    for (const id of ids) {
+      const role = await ctx.model.Role.findByPk(id);
+      await role.destroy();
+    }
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
+
   async groupsIndex() {
     const { ctx } = this;
 

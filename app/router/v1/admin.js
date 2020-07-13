@@ -14,6 +14,7 @@ module.exports = app => {
   router.get('/api/v1/admin/roles', admin, controller.v1.admin.rolesIndex);
   router.post('/api/v1/admin/roles', admin, controller.v1.admin.createRoles);
   router.put('/api/v1/admin/roles', admin, controller.v1.admin.updateRoles);
+  router.delete('/api/v1/admin/roles', admin, controller.v1.admin.deleteRoles);
 
   // 群组列表
   router.get('/api/v1/admin/groups', admin, controller.v1.admin.groupsIndex);
