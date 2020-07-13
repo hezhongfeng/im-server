@@ -25,4 +25,5 @@ module.exports = app => {
   router.get('/api/v1/admin/users', admin, controller.v1.admin.usersIndex);
   router.put('/api/v1/admin/users/disabled', admin, controller.v1.admin.usersDisabled);
   router.put('/api/v1/admin/users/mute', admin, controller.v1.admin.usersMute);
+  router.put('/api/v1/admin/users/roles', admin, controller.v1.admin.usersRoles);
 };

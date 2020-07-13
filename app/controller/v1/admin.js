@@ -380,6 +380,37 @@ class ApplyController extends Controller {
     };
   }
 
+  async usersRoles() {
+    const { ctx } = this;
+    const { roleIds, id } = ctx.request.body;
+
+    let user = await ctx.model.User.findByPk(id);
+    if (!user) {
+      ctx.body = {
+        statusCode: '1',
+        errorMessage: '无此用户',
+        data: null
+      };
+      return;
+    }
+
+    const roles = [];
+
+    for (const roleId of roleIds) {
+      roles.push(await ctx.model.Role.findByPk(roleId));
+    }
+
+    await user.setRoles(roles);
+
+    await user.save();
+
+    ctx.body = {
+      statusCode: '0',
+      errorMessage: null,
+      data: null
+    };
+  }
+
   async usersDisabled() {
     const { ctx } = this;
     const { disabled, id } = ctx.request.body;
