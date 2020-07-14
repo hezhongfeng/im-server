@@ -19,28 +19,12 @@ module.exports = app => {
     async connect(socket) {
       const { userId } = socket.handshake.query;
       this.addUser({ socketId: socket.id, userId });
-
-      // 获取在线的cs和client集合
-      const userList = await this.getOnlineUserList();
-      // 向本socket发送
-      // await this.ctx.socket.emit('/v1/user-list-change', {
-      //   userList
-      // });
-      // 广播
-      this.ctx.socket.broadcast.emit('/v1/user-list-change', {
-        userList
-      });
     }
 
     // 断开客服or客户
     async disconnect(socket) {
       const { userId } = socket.handshake.query;
       this.removeUser({ socketId: socket.id, userId });
-      const userList = this.getOnlineUserList();
-      // 广播
-      this.ctx.socket.broadcast.emit('/v1/cs/user-list-change', {
-        userList
-      });
     }
 
     // 添加新User
@@ -69,15 +53,6 @@ module.exports = app => {
       }
     }
 
-    // 获取当前在线userList
-    getOnlineUserList() {
-      const userList = [];
-      for (const id of userMap.keys()) {
-        userList.push(id);
-      }
-      return userList;
-    }
-
     // 单人发消息
     async sendUserMessage({ userId, message }) {
       if (userMap.has(userId)) {
@@ -90,6 +65,7 @@ module.exports = app => {
 
     // 发送消息
     async sendMessage(message) {
+      // 
       const newMessage = await this.saveMessage(message);
       app.io.to(message.conversationId).emit('/v1/im/new-message', newMessage);
     }
@@ -135,13 +111,6 @@ module.exports = app => {
         order: [['created_at', 'DESC']]
       });
 
-      // ctx.socket.emit('/v1/im/get-messages', {
-      //   conversationId,
-      //   pageSize,
-      //   pageNumber,
-      //   count: result.count,
-      //   messages: result.rows
-      // });
       callBack({
         conversationId,
         pageSize,

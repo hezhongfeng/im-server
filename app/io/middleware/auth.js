@@ -5,6 +5,10 @@ module.exports = () => {
     ctx.logger.info('connect: ', query);
     switch (query.scene) {
       case 'im':
+        if (!ctx.session.user) {
+          ctx.socket.disconnect();
+          return;
+        }
         ctx.service.im.connect(ctx.socket);
         break;
       default:
