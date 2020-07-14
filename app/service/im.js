@@ -1,16 +1,9 @@
 'use strict';
-// const urls = require('../libs/urls');
 
 /**
  * 状态管理
  */
 
-/**
- * 在线用户map
- * id: user.id,
- * sockets: ['ssd1asdsd','323sdwerfw22']
- * messages: []
- */
 const userMap = new Map();
 
 module.exports = app => {
@@ -53,19 +46,9 @@ module.exports = app => {
       }
     }
 
-    // 单人发消息
-    async sendUserMessage({ userId, message }) {
-      if (userMap.has(userId)) {
-        const sockets = clientMap.get(id).sockets;
-        for (const socketId of sockets) {
-          await this.sendMessage(socketId, message);
-        }
-      }
-    }
-
     // 发送消息
     async sendMessage(message) {
-      // 
+      //
       const newMessage = await this.saveMessage(message);
       app.io.to(message.conversationId).emit('/v1/im/new-message', newMessage);
     }
