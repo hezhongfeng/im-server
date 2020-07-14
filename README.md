@@ -55,9 +55,7 @@
 
 作为一个前端工程师，大多数的日常工作是不需要思考实体关系的。但是，就我的实际体验来看，懂得实体关系可以帮助我们更好的理解业务模型。而对产品和业务理解的提升对我们的帮助是非常大的，可以在需求评审的时候发现很多不符合逻辑的地方（怎么又要吐槽产品经理了），这时候能提出来就会主动避免我们在后续的过程中进行反复开发，同时可以和产品侧的同学形成比较良好的互动（而不是互怼）。下面简单罗列下比较重要的实体关系：
 
-<img width="800" src="https://i.loli.net/2020/07/14/Zhz85V2ptOylDcj.png">
-
-![](https://user-gold-cdn.xitu.io/2020/7/14/1734c09436484e73)
+<img width="600" src="https://i.loli.net/2020/07/14/Zhz85V2ptOylDcj.png">
 
 通过上图可以看到 user 是整个关系图中的核心，下面介绍下各个实体之间的关系：
 
@@ -141,9 +139,11 @@ RBAC（基于角色的访问控制）是指用户通过角色与权限进行关�
 
 ### WebSocket
 
-由于历史原因，现在主流的 http 协议是无状态协议（HTTP2 暂时应用不广泛），想实现即时通讯只能由客户端主动发起请求，然后服务端去响应。那么为了实现服务端向客户端推送信息，就需要前端主动向后端去轮询，这种方式低效且容易出错。
+由于历史原因，现在主流的 http 协议是无状态协议（HTTP2 暂时应用不广泛），一般情况是由客户端主动发起请求，然后服务端去响应。那么为了实现服务端向客户端推送信息，就需要前端主动向后端去轮询，这种方式低效且容易出错,在之前我们的管理端首页确实是这么做的（5s 一次）。
 
 为了实现这种服务端主动推送信息的需求， HTML5 开始提供一种在单个 TCP 连接上进行全双工通讯的协议，也就是 WebSocket。WebSocket 使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。WebSocket 协议在 2008 年诞生，2011 年成为国际标准，目前绝大部分浏览器都已经支持了。
+
+![](https://i.loli.net/2020/07/14/hUcq98xWCi3loVb.png)
 
 WebSocket 的用法相当简单:
 
@@ -165,11 +165,11 @@ ws.onclose = function(evt) {
 };
 ```
 
-有了 WebSocket 协议让我们使服务端主动推送信息有了先进的武器，那么有没有什么方式可以兼容新旧浏览器呢？其实很多人想到了这点，答案就是`socket.io`
+有了 WebSocket 协议让服务端主动推送信息有了先进的武器，那么有没有什么方式可以兼容新旧浏览器呢？其实很多人想到了这点，答案就是`socket.io`
 
 ### `socket.io`
 
-`socket.io`进一步封装了`WebSocket`的接口，而且可以在旧版本浏览器中切换到使用轮询的方式进行通讯（我们使用者是不会感知的），形成了一套统一的接口，大大减轻了开发的负担。主要具有以下优点：
+`socket.io`进一步封装了`WebSocket`的接口，而且可以在旧版本浏览器中自主切换到使用轮询的方式进行通讯（我们使用者是不会感知的），形成了一套统一的接口，大大减轻了开发的负担。主要具有以下优点：
 
 1. 封装出了一套非常易用的接口，前后端统一，使用非常简单
 2. 全平台支持（原生和 H5，微信小程序中也有对应的实现）
@@ -178,6 +178,19 @@ ws.onclose = function(evt) {
 [这是 socket.io 主页](https://socket.io/)
 
 > 最快，最可靠的即时通讯引擎(FEATURING THE FASTEST AND MOST RELIABLE REAL-TIME ENGINE)
+
+使用起来真的很简单：
+
+```
+var io = require('socket.io')(80);
+var cfg = require('./config.json');
+var tw = require('node-tweet-stream')(cfg);
+tw.track('socket.io');
+tw.track('javascript');
+tw.on('tweet', function(tweet){
+  io.emit('tweet', tweet);
+});
+```
 
 ## server 端详细说明
 
@@ -189,11 +202,12 @@ ws.onclose = function(evt) {
 
 ### 统一鉴权
 
-因为本系统有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
+因为本系统预设有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
 
 比如管理端的路由`/v1/admin/...`，想在这个系列路由全都添加管理员的鉴权，这时候可以用中间件的方式进行鉴权，下面是在 admin router 中使用中间件的具体例子
 
 ```
+// middware
 module.exports = () => {
   return async function admin(ctx, next) {
     let { session } = ctx;
@@ -206,6 +220,10 @@ module.exports = () => {
     }
   };
 };
+
+// router
+const admin = app.middleware.admin();
+router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
 ```
 
 ### socketio 的中间件
@@ -359,4 +377,160 @@ module.exports = async (ctx, user) => {
   }
   return user;
 };
+```
+
+## 部署
+
+我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，使用 nginx 进行反向代理。由于服务器资源有限，没有安装
+
+### server
+
+运行在本地的 7001 端口
+
+### admin
+
+配置到了`https://im-admin.hezf.online`这个域名
+
+```
+server {
+    listen       80;
+    server_name  im-admin.hezf.online;
+
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+      root         /data/static/im-admin;
+      index  index.html;
+      try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+      proxy_pass http://127.0.0.1:7001;
+      proxy_connect_timeout	3;
+      proxy_send_timeout		30;
+      proxy_read_timeout		30;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Server $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      client_max_body_size	100m;
+    }
+}
+server {
+    listen 443 ssl;
+    server_name  im-admin.hezf.online;
+    ssl_certificate /etc/nginx/conf.d/hezf-online/im-admin.hezf.online_chain.crt;
+    ssl_certificate_key /etc/nginx/conf.d/hezf-online/im-admin.hezf.online_key.key;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
+    ssl_prefer_server_ciphers on;
+
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+      root         /data/static/im-admin;
+      index  index.html;
+      try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+      proxy_pass http://127.0.0.1:7001;
+      proxy_connect_timeout	3;
+      proxy_send_timeout		30;
+      proxy_read_timeout		30;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Server $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      client_max_body_size	100m;
+    }
+}
+```
+
+### client
+
+配置到了`https://im-client.hezf.online`这个域名
+
+这里需要注意的是我给 index.html 关了前端缓存，给生成的 js 和 css 等文件加了强缓存；还有就是针对`/socket.io`的配置
+
+```
+server {
+    listen       80;
+    server_name  im-client.hezf.online;
+
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+      root   /data/static/im-client;
+      index  index.html;
+      try_files $uri $uri/ /index.html;
+    }
+
+    location ~* \.(html)$ {
+      root   /data/static/im-client;
+      access_log off;
+      add_header  Cache-Control  no-store;
+    }
+
+    location /static {
+      access_log off;
+      root   /data/static/im-client;
+      gzip on;
+      gzip_buffers 32 8K;
+      gzip_comp_level 6;
+      gzip_min_length 100;
+      gzip_types application/javascript text/css text/xml;
+      gzip_disable "MSIE [1-6]\.";
+      gzip_vary on;
+      add_header Cache-Control max-age=2592000;
+    }
+
+    location /api {
+      proxy_pass http://127.0.0.1:7001;
+      proxy_connect_timeout	3;
+      proxy_send_timeout		30;
+      proxy_read_timeout		30;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Server $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      client_max_body_size	100m;
+    }
+
+    location /socket.io {
+      proxy_pass http://127.0.0.1:7001;
+      proxy_connect_timeout	3;
+      proxy_send_timeout		30;
+      proxy_read_timeout		30;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Server $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      client_max_body_size	100m;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}
+
+  server {
+    listen 443 ssl;
+    server_name  im-client.hezf.online;
+    ssl_certificate /etc/nginx/conf.d/hezf-online/im-client.hezf.online_chain.crt;
+    ssl_certificate_key /etc/nginx/conf.d/hezf-online/im-client.hezf.online_key.key;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
+    ssl_prefer_server_ciphers on;
+
+    # ...
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}
 ```
