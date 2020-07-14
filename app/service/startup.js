@@ -6,9 +6,10 @@ class startupService extends Service {
     const { ctx } = this;
 
     let adminRole = await this.addRole('管理员', 'admin');
-    let adminRight = await this.addRight('管理', 'admin', '权限已使用，请不要操作！！！');
-
     let userRole = await this.addRole('用户', 'user');
+    let disabledRole = await this.addRole('封禁', 'disabled');
+    let muteRole = await this.addRole('禁言', 'mute');
+    let adminRight = await this.addRight('管理', 'admin', '权限已使用，请不要操作！！！');
     let loginRight = await this.addRight('登录', 'login', '权限已使用，请不要操作！！！');
     let speakRight = await this.addRight('发言', 'speak', '权限已使用，请不要操作！！！');
     this.addRight('配置', 'conf');
@@ -17,14 +18,14 @@ class startupService extends Service {
     adminRole.addRight(loginRight);
     userRole.addRight(loginRight);
     userRole.addRight(speakRight);
+    muteRole.addRight(loginRight);
 
     await this.addUser('admin', '123456', [adminRole]);
-    const hezf = await this.addUser('hezf', '123456', [userRole]);
-    const laohe = await this.addUser('laohe', '123456', [userRole]);
-    const xiaohe = await this.addUser('xiaohe', '123456', [userRole]);
+    const user = await this.addUser('user', '123456', [userRole]);
+    const disabledUser = await this.addUser('disabled', '123456', [disabledRole]);
+    const muteUser = await this.addUser('muteuser', '123456', [muteRole]);
     const member1 = await this.addUser('member1', '123456', [userRole]);
     const member2 = await this.addUser('member2', '123456', [userRole]);
-
     const member3 = await this.addUser('member3', '123456', [userRole]);
     const member4 = await this.addUser('member4', '123456', [userRole]);
     const member5 = await this.addUser('member5', '123456', [userRole]);
@@ -54,63 +55,91 @@ class startupService extends Service {
     await this.addUser('member29', '123456', [userRole]);
     await this.addUser('member30', '123456', [userRole]);
 
-    await this.createFriendRelationship(hezf, laohe);
-    await this.createFriendRelationship(hezf, xiaohe);
-    await this.createFriendRelationship(hezf, member3);
-    await this.createFriendRelationship(hezf, member4);
-    await this.createFriendRelationship(hezf, member5);
-    await this.createFriendRelationship(hezf, member6);
-    await this.createFriendRelationship(hezf, member7);
-    await this.createFriendRelationship(hezf, member8);
-    await this.createFriendRelationship(hezf, member9);
-    await this.createFriendRelationship(hezf, member10);
-    await this.createFriendRelationship(hezf, member11);
-    await this.createFriendRelationship(hezf, member12);
-    await this.createFriendRelationship(hezf, member13);
-    await this.createFriendRelationship(hezf, member14);
-    await this.createFriendRelationship(hezf, member15);
-    await this.createFriendRelationship(hezf, member16);
-    await this.createFriendRelationship(hezf, member17);
-    await this.createFriendRelationship(hezf, member18);
-    await this.createFriendRelationship(hezf, member19);
-    await this.createFriendRelationship(hezf, member20);
-    await this.createFriendRelationship(hezf, member21);
-    await this.createFriendRelationship(hezf, member22);
-    await this.createFriendRelationship(hezf, member23);
-    await this.createFriendRelationship(hezf, member24);
-    await this.createFriendRelationship(hezf, member25);
-    await this.createFriendRelationship(hezf, member26);
+    await this.createFriendRelationship(user, disabledUser);
+    await this.createFriendRelationship(user, muteUser);
+    await this.createFriendRelationship(user, member3);
+    await this.createFriendRelationship(user, member4);
+    await this.createFriendRelationship(user, member5);
+    await this.createFriendRelationship(user, member6);
+    await this.createFriendRelationship(user, member7);
+    await this.createFriendRelationship(user, member8);
+    await this.createFriendRelationship(user, member9);
+    await this.createFriendRelationship(user, member10);
+    await this.createFriendRelationship(user, member11);
+    await this.createFriendRelationship(user, member12);
+    await this.createFriendRelationship(user, member13);
+    await this.createFriendRelationship(user, member14);
+    await this.createFriendRelationship(user, member15);
+    await this.createFriendRelationship(user, member16);
+    await this.createFriendRelationship(user, member17);
+    await this.createFriendRelationship(user, member18);
+    await this.createFriendRelationship(user, member19);
+    await this.createFriendRelationship(user, member20);
+    await this.createFriendRelationship(user, member21);
+    await this.createFriendRelationship(user, member22);
+    await this.createFriendRelationship(user, member23);
+    await this.createFriendRelationship(user, member24);
+    await this.createFriendRelationship(user, member25);
+    await this.createFriendRelationship(user, member26);
 
     // 2个好友申请
     await ctx.service.apply.create({
       type: 'user',
       fromId: member1.id,
-      toId: hezf.id
+      toId: user.id
     });
     await ctx.service.apply.create({
       type: 'user',
       fromId: member2.id,
-      toId: hezf.id
+      toId: user.id
     });
 
     const group1 = await this.createGroup({
       name: '谈笑有鸿儒',
       disabled: false,
-      userList: [hezf, laohe],
-      owner: hezf
+      userList: [
+        user,
+        disabledUser,
+        muteUser,
+        member1,
+        member2,
+        member3,
+        member4,
+        member5,
+        member6,
+        member7,
+        member8,
+        member9,
+        member10
+      ],
+      owner: user
     });
 
     // 入群申请
     await ctx.service.apply.create({
       type: 'group',
-      fromId: member2.id,
+      fromId: member11.id,
       toId: group1.id
     });
     await this.createGroup({
       name: '往来无白丁',
       disabled: false,
-      userList: [laohe, hezf, xiaohe],
-      owner: hezf
+      userList: [
+        user,
+        disabledUser,
+        muteUser,
+        member1,
+        member2,
+        member3,
+        member4,
+        member5,
+        member6,
+        member7,
+        member8,
+        member9,
+        member10
+      ],
+      owner: user
     });
   }
 
@@ -128,6 +157,7 @@ class startupService extends Service {
     });
     const userInfo = await ctx.model.UserInfo.create({
       photo: `/public/images/head${Math.floor(Math.random() * 9 + 1)}.png`,
+      sign: '念念不忘，必有回响~',
       nickname: username
     });
     await user.setUserInfo(userInfo);
@@ -151,7 +181,8 @@ class startupService extends Service {
     group = await ctx.model.Group.create({
       name,
       disabled,
-      ownerId: owner.id
+      ownerId: owner.id,
+      introduction: '富强、民主、文明、和谐、自由、平等、公正、法治、爱国、敬业、诚信、友善'
     });
     await group.setConversation(conversation);
     for (const user of userList) {
