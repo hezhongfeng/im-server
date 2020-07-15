@@ -194,13 +194,38 @@ tw.on('tweet', function(tweet){
 
 ## server 端详细说明
 
-下面说下后端项目中我认为几个重要的点，大部分内容需要去 egg 官网查看
+使用脚手架初始化 server 项目，下面说下后端项目中我认为几个重要的点，大部分内容需要去 egg [官网](https://eggjs.org/zh-cn/)查看
 
-### 路由
+```
+// 目录结构说明
 
-路由使用了版本号 v1，方便以后升级，一般的增删改查直接使用 restful 的方式比较简单
+├── package.json // 项目信息
+├── app.js // 启动文件，其中有一些钩子函数
+├── app
+|   ├── router.js // 路由
+│   ├── controller
+│   ├── service
+│   ├── middleware // 中间件
+│   ├── model // 实体模型
+│   └── io // socket.io 相关
+│       ├── controller
+│       └── middleware // io独有的中间件
+├── config // 配置文件
+|   ├── plugin.js // 插件配置文件
+|   └── config.default.js // 默认的配置文件
+├── logs // server运行期间产生的log文件
+└── public // 静态文件和上传文件目录
+```
 
-### 统一鉴权
+## 路由
+
+Router 主要用来描述请求 URL 和具体承担执行动作的 Controller 的对应关系，即 `app/router`
+
+1. 路由使用了版本号 v1，方便以后升级，一般的增删改查直接使用 restful 的方式比较简单
+2. 除了登录和注册的接口，在其余所有 http 接口添加了对 session 的检查，校验登录状态，位置在`app/middleware/auth.js`
+3. 在所有管理端的接口处添加了对 admin 权限的检查，位置在`app/middleware/admin.js`
+
+## 统一鉴权
 
 因为本系统预设有管理员和一般通信用户的不同角色，所以需要针对管理和通信的接口路由做一下统一的鉴权处理。
 
@@ -226,9 +251,90 @@ const admin = app.middleware.admin();
 router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
 ```
 
+## model 实体模型
+
+使用的 sequelize+mysql 组合，模型的基础信息比较容易处理，需要注意的就是实体直接的关系设计，即 associate，下面是 user 的关系描述
+
+```
+User.associate = function() {
+  // One-To-One associations
+  app.model.User.hasOne(app.model.UserInfo);
+
+  // One-To-Many associations
+  app.model.User.hasMany(app.model.Apply);
+
+  // Many-To-Many associations
+  app.model.User.belongsToMany(app.model.Group, { through: 'user_group' });
+  app.model.User.belongsToMany(app.model.Role, { through: 'user_role' });
+  // app.model.User.belongsToMany(app.model.Conversation, { through: 'user_conversation' });
+};
+```
+
+### 一对一
+
+例如 user 和 userInfo 的关系就是一对一的关系，定义好了之后，我们在新建 user 的时候就可以使用 `user.setUserInfo(userInfo)`了，想获取此 user 的基础信息的时候也可以通过`user.getUserInfo()`
+
+### 一对多
+
+User 和 Apply（申请）的关系就是一对多，即一个用户可以对应多个自己的申请，目前只有好友申请和入群申请:
+
+添加申请的时候可以`user.addApply(apply)`，获取的时候可以这样获取：
+
+```
+const result = await ctx.model.Apply.findAndCountAll({
+  where: {
+    userId: ctx.session.user.id,
+    hasHandled: false
+  }
+});
+```
+
+### 多对多
+
+user 和 group 的关系就是多对多，即一个用户可以对应多个群组，一个群组也可以对应多个用户，这样 sequelize 会建立一个中间表 user_group 来实现这种关系。
+
+一般我这么使用：
+
+```
+group.addUser(user); // 建立群组和用户的关系
+user.getGroups(); // 获取用户的群组信息
+```
+
+### 需要注意的点
+
+1. sequelize 的所有操作都是基于 promise 的，所有大多时候都使用 await 进行等待
+2. 修改了否个模型的实例的某个属性后，需要 save
+3. 当我们需要把模型的数据进行组合后返回给前端的时候，需要通过 get({plain: true})这种方式
+
+## socketio
+
+egg 提供了 egg-socket.io 插件，需要在安装 egg-socket.io 后在 config/plugin.js 开启插件，io 有自己的中间件和 controller
+
+### socketio 的路由
+
+io 的路由和一般的 http 请求的不太一样，注意这里的路由不能添加中间件处理（我没成功），所以禁言处理我是在 controller 里面处理的
+
+```
+// 加入群
+io.of('/').route('/v1/im/join', app.io.controller.im.join);
+// 发送消息
+io.of('/').route('/v1/im/new-message', app.io.controller.im.newMessage);
+// 查询消息
+io.of('/').route('/v1/im/get-messages', app.io.controller.im.getMessages);
+```
+
 ### socketio 的中间件
 
-有两个默认的中间件，一个是连接和断开时候调用的 connectionMiddleware，这里用来处理业务逻辑了；另外一个是每次发消息时候调用的 packetMiddleware，这里用来打印 log 了
+有两个默认的中间件，一个是连接和断开时候调用的 connection Middleware，这里用来校验登录状态和处理业务逻辑了；另外一个是每次发消息时候调用的 packet Middleware，这里用来打印 log
+
+由于预设了禁言权限，在 controller 里面进行处理
+
+```
+// 对用户发言的权限进行判断
+if (!ctx.session.user.rights.some(right => right.keyName === 'speak')) {
+  return;
+}
+```
 
 ### 聊天
 
@@ -236,7 +342,7 @@ router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
 
 ### 消息
 
-message 的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做如下说明：
+message 的结构设计参考了几家第三方服务的设计，也结合本项目自身的情况做了调整，可以随意扩展，做如下说明：
 
 ```
 const Message = app.model.define('message', {
@@ -303,7 +409,7 @@ body 里面存放的是消息体，使用 json 用来存放不同的消息格式
 
 ### passport
 
-这个章节的官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普用的 controller 控制的。
+这个章节的 egg 官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普用的 controller 控制的。
 
 下面详细说下使用第三方平台（我选用的是 GitHub）登录的过程：
 
@@ -338,7 +444,7 @@ config.passportGithub = {
 4. 需要设置两个 passport 的 get 请求路由，第一个是我们在 login 页面点击的请求，第二个是我们在上一步设置的 callbackURL，这里主要是第三方平台会给我们一个可用的 code，然后根据 OAuth2 授权规则去获取用户的详细信息
 
 ```
-const github = app.passport.authenticate('github', { successRedirect: '/v1/passport' });// successRedirect就是最后校验完毕后前端会跳转的路由
+const github = app.passport.authenticate('github', { successRedirect: '/v1/passport' }); // successRedirect就是最后校验完毕后前端会跳转的路由
 router.get('/v1/passport/github', github);
 router.get('/v1/passport/github/callback', github);
 ```
@@ -381,156 +487,4 @@ module.exports = async (ctx, user) => {
 
 ## 部署
 
-我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，使用 nginx 进行反向代理。由于服务器资源有限，没有安装
-
-### server
-
-运行在本地的 7001 端口
-
-### admin
-
-配置到了`https://im-admin.hezf.online`这个域名
-
-```
-server {
-    listen       80;
-    server_name  im-admin.hezf.online;
-
-    # Load configuration files for the default server block.
-    include /etc/nginx/default.d/*.conf;
-
-    location / {
-      root         /data/static/im-admin;
-      index  index.html;
-      try_files $uri $uri/ /index.html;
-    }
-
-    location /api {
-      proxy_pass http://127.0.0.1:7001;
-      proxy_connect_timeout	3;
-      proxy_send_timeout		30;
-      proxy_read_timeout		30;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Server $host;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      client_max_body_size	100m;
-    }
-}
-server {
-    listen 443 ssl;
-    server_name  im-admin.hezf.online;
-    ssl_certificate /etc/nginx/conf.d/hezf-online/im-admin.hezf.online_chain.crt;
-    ssl_certificate_key /etc/nginx/conf.d/hezf-online/im-admin.hezf.online_key.key;
-    ssl_session_timeout 5m;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
-    ssl_prefer_server_ciphers on;
-
-    # Load configuration files for the default server block.
-    include /etc/nginx/default.d/*.conf;
-
-    location / {
-      root         /data/static/im-admin;
-      index  index.html;
-      try_files $uri $uri/ /index.html;
-    }
-
-    location /api {
-      proxy_pass http://127.0.0.1:7001;
-      proxy_connect_timeout	3;
-      proxy_send_timeout		30;
-      proxy_read_timeout		30;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Server $host;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      client_max_body_size	100m;
-    }
-}
-```
-
-### client
-
-配置到了`https://im-client.hezf.online`这个域名
-
-这里需要注意的是我给 index.html 关了前端缓存，给生成的 js 和 css 等文件加了强缓存；还有就是针对`/socket.io`的配置
-
-```
-server {
-    listen       80;
-    server_name  im-client.hezf.online;
-
-    # Load configuration files for the default server block.
-    include /etc/nginx/default.d/*.conf;
-
-    location / {
-      root   /data/static/im-client;
-      index  index.html;
-      try_files $uri $uri/ /index.html;
-    }
-
-    location ~* \.(html)$ {
-      root   /data/static/im-client;
-      access_log off;
-      add_header  Cache-Control  no-store;
-    }
-
-    location /static {
-      access_log off;
-      root   /data/static/im-client;
-      gzip on;
-      gzip_buffers 32 8K;
-      gzip_comp_level 6;
-      gzip_min_length 100;
-      gzip_types application/javascript text/css text/xml;
-      gzip_disable "MSIE [1-6]\.";
-      gzip_vary on;
-      add_header Cache-Control max-age=2592000;
-    }
-
-    location /api {
-      proxy_pass http://127.0.0.1:7001;
-      proxy_connect_timeout	3;
-      proxy_send_timeout		30;
-      proxy_read_timeout		30;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Server $host;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      client_max_body_size	100m;
-    }
-
-    location /socket.io {
-      proxy_pass http://127.0.0.1:7001;
-      proxy_connect_timeout	3;
-      proxy_send_timeout		30;
-      proxy_read_timeout		30;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Server $host;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      client_max_body_size	100m;
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-    }
-
-    error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-    }
-}
-
-  server {
-    listen 443 ssl;
-    server_name  im-client.hezf.online;
-    ssl_certificate /etc/nginx/conf.d/hezf-online/im-client.hezf.online_chain.crt;
-    ssl_certificate_key /etc/nginx/conf.d/hezf-online/im-client.hezf.online_key.key;
-    ssl_session_timeout 5m;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
-    ssl_prefer_server_ciphers on;
-
-    # ...
-
-    error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-    }
-}
-```
+我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，使用 nginx 进行反向代理。由于服务器资源有限，没有使用一些自动化工具 Jenkins 和 Docker
