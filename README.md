@@ -407,9 +407,42 @@ body 里面存放的是消息体，使用 json 用来存放不同的消息格式
 }
 ```
 
+### 上传文件
+
+首先需要在配置文件里面进行配置，我这里限制了文件大小，饼跨站了 ios 的视频文件格式：
+
+```
+config.multipart = {
+  mode: 'file',
+  fileSize: '3mb',
+  fileExtensions: ['.mov']
+};
+```
+
+使用了一个统一的接口来处理文件上传，核心问题是文件的写入，files 是前端传来的文件列表
+
+```
+for (const file of ctx.request.files) {
+  // 生成文件路径，注意upload文件路径需要存在
+  const filePath = `./public/upload/${
+    Date.now() + Math.floor(Math.random() * 100000).toString() + '.' + file.filename.split('.').pop()
+  }`;
+  const reader = fs.createReadStream(file.filepath); // 创建可读流
+  const upStream = fs.createWriteStream(filePath); // 创建可写流
+  reader.pipe(upStream); // 可读流通过管道写入可写流
+  data.push({
+    url: filePath.slice(1)
+  });
+}
+```
+
+我这里是存储到了 server 目录的`/public/upload/`，前端在访问的时候需要做一下代理
+
 ### passport
 
-这个章节的 egg 官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普用的 controller 控制的。
+这个章节的 egg 官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。
+
+因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普通的接口认证配合 session。
 
 下面详细说下使用第三方平台（我选用的是 GitHub）登录的过程：
 
@@ -437,54 +470,72 @@ module.exports.passportGithub = {
 config.passportGithub = {
   key: 'your_clientID',
   secret: 'your_clientSecret',
-  callbackURL: '/v1/passport/github/callback' // 注意这里非常的关键，这里需要和你在github上面设置的Authorization callback URL一致，我开发的时候想换github上面设置的Authorization callback URL一直报错，后来发现需要在这里配置
+  callbackURL: 'http:127.0.0.1:3000/v1/passport/github/callback' // 注意这里非常的关键，这里需要和你在github上面设置的Authorization callback URL一致，我开发的时候想换github上面设置的Authorization callback URL一直报错，后来发现需要在这里配置
 };
 ```
 
 4. 需要设置两个 passport 的 get 请求路由，第一个是我们在 login 页面点击的请求，第二个是我们在上一步设置的 callbackURL，这里主要是第三方平台会给我们一个可用的 code，然后根据 OAuth2 授权规则去获取用户的详细信息
 
 ```
-const github = app.passport.authenticate('github', { successRedirect: '/v1/passport' }); // successRedirect就是最后校验完毕后前端会跳转的路由
+const github = app.passport.authenticate('github', { successRedirect: '/' }); // successRedirect就是最后校验完毕后前端会跳转的路由
 router.get('/v1/passport/github', github);
 router.get('/v1/passport/github/callback', github);
 ```
 
-5. 获取到详细信息后，我们需要在 app.js 里面的 app.passport.verify 去验证用户信息，并且和我们自身平台的用户信息做关联，也要授权给 session
+5. 这时候在前端点击`v1/passport/github`会发起 github 对这个应用的授权，成功后 github 会 302 到`http:127.0.0.1:3000/v1/passport/github/callback?code=12313123123`，我们的 githubPassport 插件会去获取用户在 github 上的信息，获取到详细信息后，我们需要在 `app/passport/verify.js` 去验证用户信息，并且和我们自身平台的用户信息做关联，也要授权给 session
 
 ```
-// 在verify函数我们只能获取ctx和user
-module.exports = async (ctx, user) => {
-  const { provider, id, name, photo } = user;
-  if (provider === 'github') {
-    // 查询auth是否已经注册
-    const auth = await ctx.model.Authorization.findOne({
+module.exports = async (ctx, githubUser) => {
+  const { service } = ctx;
+  const { provider, name, photo, displayName } = githubUser;
+  ctx.logger.info('githubUser', githubUser);
+
+  let user = await ctx.model.User.findOne({
+    where: {
+      username: name
+    }
+  });
+  if (!user) {
+    newUser = await ctx.model.User.create({
+      provider,
+      username: name
+    });
+    const userInfo = await ctx.model.UserInfo.create({
+      nickname: displayName,
+      photo
+    });
+    const role = await ctx.model.Role.findOne({
       where: {
-        provider,
-        uid: id
+        keyName: 'user'
       }
     });
-    if (!auth) {
-      // 如果没有注册的话就需要使用拿到的user信息注册下
-      const newAuth = await ctx.model.Authorization.create({
-        provider,
-        uid: id,
-        username: name
-      });
-      const user = await ctx.model.User.create({
-        nickname: name,
-        photo
-      });
-      newAuth.setUser(user);
-      // 这步和下面的功能一样，添加auth到session
-      ctx.session.auth = newAuth;
-    } else {
-      ctx.session.auth = auth;
-    }
+    user.setUserInfo(userInfo);
+    user.addRole(role);
+    await user.save();
   }
-  return user;
+  const { rights, roles } = await service.user.getUserAttribute(user.id);
+
+  // 权限判断
+  if (!rights.some(item => item.keyName === 'login')) {
+    ctx.body = {
+      statusCode: '1',
+      errorMessage: '不具备登录权限'
+    };
+    return;
+  }
+
+  ctx.session.user = {
+    id: user.id,
+    roles,
+    rights
+  };
+
+  return githubUser;
 };
 ```
 
+注意看上面的代码，如果是首次授权将会创建这个用户，如果是第二次授权，那么用户已经被创建了
+
 ## 部署
 
-我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，使用 nginx 进行反向代理。由于服务器资源有限，没有使用一些自动化工具 Jenkins 和 Docker
+我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，直接在 centos 上面启动，使用 nginx 进行反向代理。由于服务器资源有限，没有使用一些自动化工具 Jenkins 和 Docker，这就导致了我在更新的时候得有一些手动操作。
