@@ -53,7 +53,7 @@ module.exports = appInfo => {
   config.passportGithub = {
     key: '',
     secret: '',
-    callbackURL: '/api/v1/passport/github/callback'
+    callbackURL: 'http://localhost:3000/api/v1/passport/github/callback'
   };
 
   config.logger = {

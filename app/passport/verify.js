@@ -1,9 +1,7 @@
-const assert = require('assert');
-
 module.exports = async (ctx, githubUser) => {
   const { service } = ctx;
   const { provider, name, photo, displayName } = githubUser;
-  assert(provider, 'user.provider should exists');
+  ctx.logger.info('githubUser', githubUser);
 
   let user = await ctx.model.User.findOne({
     where: {
