@@ -1,45 +1,49 @@
 const assert = require('assert');
 
-module.exports = async (ctx, user) => {
+module.exports = async (ctx, githubUser) => {
   const { service } = ctx;
-  const { provider, name, photo } = user;
+  const { provider, name, photo, displayName } = githubUser;
   assert(provider, 'user.provider should exists');
-  if (provider === 'github') {
-    let user = await ctx.model.User.findOne({
+
+  let user = await ctx.model.User.findOne({
+    where: {
+      username: name
+    }
+  });
+  if (!user) {
+    newUser = await ctx.model.User.create({
+      provider,
+      username: name
+    });
+    const userInfo = await ctx.model.UserInfo.create({
+      nickname: displayName,
+      photo
+    });
+    const role = await ctx.model.Role.findOne({
       where: {
-        username: name
+        keyName: 'user'
       }
     });
-    if (!user) {
-      user = await ctx.model.User.create({
-        provider,
-        username: name
-      });
-      const userInfo = await ctx.model.UserInfo.create({
-        nickname: name,
-        photo
-      });
-      user.setUserInfo(userInfo);
-      // ctx.session.user = user;
-    } else {
-      // ctx.session.user = user;
-    }
-    const { rights, roles } = await service.user.getUserAttribute(user.id);
-
-    // 权限判断
-    if (!rights.some(item => item.keyName === 'login')) {
-      ctx.body = {
-        statusCode: '1',
-        errorMessage: '不具备登录权限'
-      };
-      return;
-    }
-
-    ctx.session.user = {
-      id: user.id,
-      roles,
-      rights
-    };
+    user.setUserInfo(userInfo);
+    user.addRole(role);
+    await user.save();
   }
-  return user;
+  const { rights, roles } = await service.user.getUserAttribute(user.id);
+
+  // 权限判断
+  if (!rights.some(item => item.keyName === 'login')) {
+    ctx.body = {
+      statusCode: '1',
+      errorMessage: '不具备登录权限'
+    };
+    return;
+  }
+
+  ctx.session.user = {
+    id: user.id,
+    roles,
+    rights
+  };
+
+  return githubUser;
 };
