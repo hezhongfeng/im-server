@@ -23,16 +23,29 @@ class LoginService extends Service {
         nickname: username,
         photo: `/public/images/head${Math.floor(Math.random() * 9 + 1)}.png`
       });
+      const role = await ctx.model.Role.findOne({
+        where: {
+          keyName: 'user'
+        }
+      });
       user.setUserInfo(userInfo);
+      user.addRole(role);
+      await user.save();
+      const { userInfo, rights, roles } = await service.user.getUserAttribute(user.id);
       ctx.session.user = {
         id: user.id,
-        roles: await user.getRoles().map(item => item.keyName)
+        roles,
+        rights
       };
-      const object = await service.user.getUserAttribute(ctx.session.user.id);
       ctx.body = {
         statusCode: '0',
         errorMessage: null,
-        data: Object.assign(object, { id: user.id })
+        data: {
+          userInfo,
+          rights,
+          roles,
+          id: user.id
+        }
       };
     } catch (error) {
       console.warn('error', error);
