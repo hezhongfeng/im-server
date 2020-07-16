@@ -194,7 +194,9 @@ tw.on('tweet', function(tweet){
 
 ## server 端详细说明
 
-使用脚手架初始化 server 项目，下面说下后端项目中我认为几个重要的点，大部分内容需要去 egg [官网](https://eggjs.org/zh-cn/)查看
+着重讲下 Server 端项目中我认为几个重要的点，大部分内容需要去 egg [官网](https://eggjs.org/zh-cn/)查看。
+
+使用脚手架`npm init egg --type=simple`初始化 server 项目，安装 mysql（我的是 8.0 版本），配置上 sequelize 所需的数据库链接密码等，就可以启动了
 
 ```
 // 目录结构说明
@@ -436,7 +438,14 @@ for (const file of ctx.request.files) {
 }
 ```
 
-我这里是存储到了 server 目录的`/public/upload/`，前端在访问的时候需要做一下代理
+我这里是存储到了 server 目录的`/public/upload/`，这个目录需要做一下静态文件的配置：
+
+```
+config.static = {
+  prefix: '/public/',
+  dir: path.join(appInfo.baseDir, 'public')
+};
+```
 
 ### passport
 
@@ -535,6 +544,20 @@ module.exports = async (ctx, githubUser) => {
 ```
 
 注意看上面的代码，如果是首次授权将会创建这个用户，如果是第二次授权，那么用户已经被创建了
+
+## 初始化
+
+系统部署或者运行的时候，需要预设一些数据和表，代码在`app.js` 和 `app/service/startup.js`
+
+逻辑就是项目启动完毕后，利用 model 同步表结构到数据库中，然后开始新建一些基础数据：
+
+1. 新建角色和权限，并给角色分配权限
+2. 新建不同用户，分配角色
+3. 给一些用户建立好友关系
+4. 添加申请
+5. 创建群组
+
+做完以上这些就算是完成了初始数据了，可以进行正常的运转
 
 ## 部署
 
