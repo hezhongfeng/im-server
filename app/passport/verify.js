@@ -43,5 +43,5 @@ module.exports = async (ctx, githubUser) => {
     rights
   };
 
-  return githubUser;
+  return user;
 };
