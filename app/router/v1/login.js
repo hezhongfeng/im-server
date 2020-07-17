@@ -10,5 +10,13 @@ module.exports = app => {
   // github登录授权
   const github = app.passport.authenticate('github', { successRedirect: '/' });
   router.get('/api/v1/passport/github', github);
-  router.get('/api/v1/passport/github/callback', github);
+  router.get(
+    '/api/v1/passport/github/callback',
+    async (ctx, next) => {
+      let { path } = ctx;
+      ctx.logger.info('path', path);
+      await next();
+    },
+    github
+  );
 };

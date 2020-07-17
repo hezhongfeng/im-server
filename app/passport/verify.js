@@ -1,15 +1,16 @@
 module.exports = async (ctx, githubUser) => {
   const { service } = ctx;
   const { provider, name, photo, displayName } = githubUser;
-  ctx.logger.info('githubUser', githubUser);
+  ctx.logger.info('githubUser', { provider, name, photo, displayName });
 
   let user = await ctx.model.User.findOne({
     where: {
       username: name
     }
   });
+
   if (!user) {
-    newUser = await ctx.model.User.create({
+    user = await ctx.model.User.create({
       provider,
       username: name
     });
@@ -43,5 +44,5 @@ module.exports = async (ctx, githubUser) => {
     rights
   };
 
-  return user;
+  return githubUser;
 };
