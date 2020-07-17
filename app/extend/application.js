@@ -15,15 +15,15 @@ module.exports = {
         },
         post: (url, params) => {
           this.logger.info('http-method:post', url, params);
-          return axios.post(this.config.business.dir + this.config.business.port + url, params);
+          return axios.post(url, params);
         },
         put: (url, params) => {
           this.logger.info('http-method:put', url, params);
-          return axios.put(this.config.business.dir + this.config.business.port + url, params);
+          return axios.put(url, params);
         },
         delete: (url, params) => {
           this.logger.info('http-method:delete', url, params);
-          return axios.delete(this.config.business.dir + this.config.business.port + url, {
+          return axios.delete(url, {
             data: params
           });
         }
