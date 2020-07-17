@@ -449,15 +449,16 @@ config.static = {
 
 ### passport
 
-这个章节的 egg 官方文档，要你的命，一定要去看源码，太坑人了，我研究了一整天才弄明白是怎么回事。
+这个章节的 egg 官方文档，要你的命，例子啥也没有，一定要去看源码，太坑人了，我研究了很久才弄明白是怎么回事。
 
 因为我想更自由的控制账户密码登录，所以账号密码登录并没有使用 passport，使用的就是普通的接口认证配合 session。
 
 下面详细说下使用第三方平台（我选用的是 GitHub）登录的过程：
 
-1. 在[GitHub OAuth Apps](https://github.com/settings/applications/new)新建你的应用
-1. 在项目安装 egg-passport 和 egg-passport-github
-1. 开启插件：
+1. 在[GitHub OAuth Apps](https://github.com/settings/applications/new)新建你的应用，获取 key 和 secret
+2. 在项目安装 egg-passport 和 egg-passport-github
+
+开启插件：
 
 ```
 // config/plugin.js
@@ -475,37 +476,45 @@ module.exports.passportGithub = {
 3. 配置：
 
 ```
-// config/default.js
+// config.default.js
 config.passportGithub = {
   key: 'your_clientID',
   secret: 'your_clientSecret',
-  callbackURL: 'http:127.0.0.1:3000/v1/passport/github/callback' // 注意这里非常的关键，这里需要和你在github上面设置的Authorization callback URL一致，我开发的时候想换github上面设置的Authorization callback URL一直报错，后来发现需要在这里配置
+  callbackURL: 'http://localhost:3000/api/v1/passport/github/callback' // 注意这里非常的关键，这里需要和你在github上面设置的Authorization callback URL一致
 };
 ```
 
-4. 需要设置两个 passport 的 get 请求路由，第一个是我们在 login 页面点击的请求，第二个是我们在上一步设置的 callbackURL，这里主要是第三方平台会给我们一个可用的 code，然后根据 OAuth2 授权规则去获取用户的详细信息
+4. 在 app.js 中开启 passport
 
 ```
-const github = app.passport.authenticate('github', { successRedirect: '/' }); // successRedirect就是最后校验完毕后前端会跳转的路由
+this.app.passport.verify(verify);
+```
+
+5. 需要设置两个 passport 的 get 请求路由，第一个是我们在 login 页面点击的请求，第二个是我们在上一步设置的 callbackURL，这里主要是第三方平台会给我们一个可用的 code，然后根据 OAuth2 授权规则去获取用户的详细信息
+
+```
+const github = app.passport.authenticate('github', { successRedirect: '/' }); // successRedirect就是最后校验完毕后前端会跳转的路由，我这里直接跳转到主页了
 router.get('/v1/passport/github', github);
 router.get('/v1/passport/github/callback', github);
 ```
 
-5. 这时候在前端点击`v1/passport/github`会发起 github 对这个应用的授权，成功后 github 会 302 到`http:127.0.0.1:3000/v1/passport/github/callback?code=12313123123`，我们的 githubPassport 插件会去获取用户在 github 上的信息，获取到详细信息后，我们需要在 `app/passport/verify.js` 去验证用户信息，并且和我们自身平台的用户信息做关联，也要授权给 session
+6. 这时候在前端点击`/v1/passport/github`会发起 github 对这个应用的授权，成功后 github 会 302 到`http://localhost:3000/v1/passport/github/callback?code=12313123123`，我们的 githubPassport 插件会去获取用户在 github 上的信息，获取到详细信息后，我们需要在 `app/passport/verify.js` 去验证用户信息，并且和我们自身平台的用户信息做关联，也要给 session 赋值
 
 ```
+// verify.js
 module.exports = async (ctx, githubUser) => {
   const { service } = ctx;
   const { provider, name, photo, displayName } = githubUser;
-  ctx.logger.info('githubUser', githubUser);
+  ctx.logger.info('githubUser', { provider, name, photo, displayName });
 
   let user = await ctx.model.User.findOne({
     where: {
       username: name
     }
   });
+
   if (!user) {
-    newUser = await ctx.model.User.create({
+    user = await ctx.model.User.create({
       provider,
       username: name
     });
@@ -541,6 +550,7 @@ module.exports = async (ctx, githubUser) => {
 
   return githubUser;
 };
+
 ```
 
 注意看上面的代码，如果是首次授权将会创建这个用户，如果是第二次授权，那么用户已经被创建了
@@ -555,7 +565,7 @@ module.exports = async (ctx, githubUser) => {
 2. 新建不同用户，分配角色
 3. 给一些用户建立好友关系
 4. 添加申请
-5. 创建群组
+5. 创建群组，并添加一些人
 
 做完以上这些就算是完成了初始数据了，可以进行正常的运转
 
