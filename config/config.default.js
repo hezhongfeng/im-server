@@ -77,6 +77,13 @@ module.exports = appInfo => {
     dir: path.join(appInfo.baseDir, 'public')
   };
 
+  config.baidu = {
+    client_id: '',
+    client_secret: '',
+    service_id: '',
+    skill_ids: ['']
+  };
+
   return {
     ...config
   };

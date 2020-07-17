@@ -102,6 +102,19 @@ module.exports = app => {
         messages: result.rows
       });
     }
+
+    async robot(message) {
+      const { ctx } = this;
+      await ctx.socket.emit('/v1/im/new-message', message);
+      const res = await ctx.service.baidu.chat(message.body.msg);
+      const robotMessage = {
+        ...message,
+        fromId: message.toId,
+        toId: message.fromId
+      };
+      robotMessage.body.msg = res.data.result.response_list[0].action_list[0].say;
+      await ctx.socket.emit('/v1/im/new-message', robotMessage);
+    }
   }
   return Io;
 };
