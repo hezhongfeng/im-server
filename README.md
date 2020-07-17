@@ -2,6 +2,8 @@
 
 即时通讯应用, 包含[服务端](https://github.com/hezhongfeng/im-server)、[管理端](https://github.com/hezhongfeng/im-fe-admin)和[客户端](https://github.com/hezhongfeng/im-fe-client)
 
+现已部署上线，欢迎体验[客户端](https://im-client.hezf.online/)和[管理端](https://im-admin.hezf.online/)
+
 ## 介绍
 
 使用 egg 框架，IM 服务的服务端
@@ -325,6 +327,8 @@ io.of('/').route('/v1/im/new-message', app.io.controller.im.newMessage);
 // 查询消息
 io.of('/').route('/v1/im/get-messages', app.io.controller.im.getMessages);
 ```
+
+注意：我把群组和好友关系都看做是一个 room（也就是一个会话），这样就是直接向这个 romm 里面发消息，里面的人都可以收到
 
 ### socketio 的中间件
 
