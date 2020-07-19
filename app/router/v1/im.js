@@ -8,6 +8,6 @@ module.exports = app => {
   // 查询消息
   io.of('/').route('/v1/im/get-messages', app.io.controller.im.getMessages);
 
-  // 激活会话
+  // 更新会话
   router.put('/api/v1/conversations/active', controller.v1.conversations.active);
 };

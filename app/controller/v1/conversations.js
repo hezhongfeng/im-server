@@ -14,7 +14,7 @@ class ConversationController extends Controller {
       }
     });
 
-    const data = [];
+    let data = [];
 
     for (const friendUser of friends) {
       const conversation = friendUser.conversation;
@@ -30,6 +30,7 @@ class ConversationController extends Controller {
       conversation.target = group;
       data.push(conversation);
     }
+    data = data.filter(item => item.active);
     data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     ctx.body = {
@@ -41,8 +42,9 @@ class ConversationController extends Controller {
 
   async active() {
     const { ctx } = this;
-    const { id } = ctx.request.body;
+    const { id, active } = ctx.request.body;
     const conversation = await ctx.model.Conversation.findByPk(id);
+    conversation.active = active;
     conversation.activeTime = new Date();
     await conversation.save();
 
