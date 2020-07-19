@@ -28,8 +28,13 @@ class LoginService extends Service {
           keyName: 'user'
         }
       });
+      const group = await ctx.model.Group.findOne({ where: { disabled: false } });
       user.setUserInfo(userInfo);
       user.addRole(role);
+      if (group) {
+        group.addUser(user);
+        await group.save();
+      }
       await user.save();
       const { rights, roles } = await service.user.getUserAttribute(user.id);
       ctx.session.user = {
