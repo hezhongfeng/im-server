@@ -256,22 +256,45 @@ const admin = app.middleware.admin();
 router.get('/api/v1/admin/rights', admin, controller.v1.admin.rightsIndex);
 ```
 
-## model 实体模型
+## 数据库相关
 
-使用的 sequelize+mysql 组合，模型的基础信息比较容易处理，需要注意的就是实体直接的关系设计，即 associate，下面是 user 的关系描述
+使用的 sequelize+mysql 组合，egg 也有 sequelize 的相关插件，[sequelize](https://sequelize.org/v5/) 即是一款 Node 环境使用的 ORM，支持 Postgres, MySQL, MariaDB, SQLite 和 Microsoft SQL Server，使用起来还是挺方便的。需要先定义模型和模型直接的关系，有了关系之后便可以使用一些预设的方法了。
+
+### model 实体模型
+
+模型的基础信息比较容易处理，需要注意的就是实体之间的关系设计，即 associate，下面是 user 的关系描述
 
 ```
-User.associate = function() {
-  // One-To-One associations
-  app.model.User.hasOne(app.model.UserInfo);
+// User.js
+module.exports = app => {
+  const { STRING } = app.Sequelize;
 
-  // One-To-Many associations
-  app.model.User.hasMany(app.model.Apply);
+  const User = app.model.define('user', {
+    provider: {
+      type: STRING
+    },
+    username: {
+      type: STRING,
+      unique: 'username'
+    },
+    password: {
+      type: STRING
+    }
+  });
 
-  // Many-To-Many associations
-  app.model.User.belongsToMany(app.model.Group, { through: 'user_group' });
-  app.model.User.belongsToMany(app.model.Role, { through: 'user_role' });
-  // app.model.User.belongsToMany(app.model.Conversation, { through: 'user_conversation' });
+  User.associate = function() {
+    // One-To-One associations
+    app.model.User.hasOne(app.model.UserInfo);
+
+    // One-To-Many associations
+    app.model.User.hasMany(app.model.Apply);
+
+    // Many-To-Many associations
+    app.model.User.belongsToMany(app.model.Group, { through: 'user_group' });
+    app.model.User.belongsToMany(app.model.Role, { through: 'user_role' });
+  };
+
+  return User;
 };
 ```
 
@@ -307,9 +330,9 @@ user.getGroups(); // 获取用户的群组信息
 
 ### 需要注意的点
 
-1. sequelize 的所有操作都是基于 promise 的，所有大多时候都使用 await 进行等待
-2. 修改了否个模型的实例的某个属性后，需要 save
-3. 当我们需要把模型的数据进行组合后返回给前端的时候，需要通过 get({plain: true})这种方式
+1. sequelize 的所有操作都是基于 Promise 的，所有大多时候都使用 await 进行等待
+2. 修改了某个模型的实例的某个属性后，需要进行 save
+3. 当我们需要把模型的数据进行组合后返回给前端的时候，需要通过 get({plain: true})这种方式，转化成数据，然后再拼接，例如获取会话列表的时候
 
 ## socketio
 
@@ -426,7 +449,7 @@ body 里面存放的是消息体，使用 json 用来存放不同的消息格式
 
 1. 新建机器人，管理机器人的技能，至少一个
 2. 前往百度云"应用列表"中创建、查看 API Key / Secret Key
-3. 在 config.default.js 中配置 baidu 相关参数
+3. 在 config.default.js 中配置 baidu 相关参数，相关接口说明在[这里](https://ai.baidu.com/ai-doc/UNIT/qk38gggxg)
 
 如果不想启动可以在 app.js 和 app/schedule/baidu.js 中删除 `ctx.service.baidu.getToken();`
 
@@ -592,4 +615,4 @@ module.exports = async (ctx, githubUser) => {
 
 ## 部署
 
-我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 和 nginx，直接在 centos 上面启动，使用 nginx 进行反向代理。由于服务器资源有限，没有使用一些自动化工具 Jenkins 和 Docker，这就导致了我在更新的时候得有一些手动操作。
+我是在腾讯云买的服务器 centos，在阿里云买的域名，装了 node(12.18.2) 、 nginx 和 mysql8.0，直接在 centos 上面启动，前端使用 nginx 进行反向代理。由于服务器资源有限，没有使用一些自动化工具 Jenkins 和 Docker，这就导致了我在更新的时候得有一些手动操作。
