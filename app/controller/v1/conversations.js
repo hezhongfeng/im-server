@@ -42,7 +42,7 @@ class ConversationController extends Controller {
 
   async active() {
     const { ctx } = this;
-    const { id, active } = ctx.request.body;
+    const { id, active = true } = ctx.request.body;
     const conversation = await ctx.model.Conversation.findByPk(id);
     conversation.active = active;
     conversation.activeTime = new Date();
