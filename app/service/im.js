@@ -48,7 +48,7 @@ module.exports = app => {
 
     // 发送消息
     async sendMessage(message) {
-      //
+      // 这里这么做是为了保持和查询消息的结构一致性，也为了消息有个唯一的ID
       const newMessage = await this.saveMessage(message);
       app.io.to(message.conversationId).emit('/v1/im/new-message', newMessage);
     }

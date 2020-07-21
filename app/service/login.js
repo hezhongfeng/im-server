@@ -36,7 +36,9 @@ class LoginService extends Service {
         await group.save();
       }
       await user.save();
-      const { rights, roles } = await service.user.getUserAttribute(user.id);
+      await role.save();
+      const rights = await role.getRights();
+      const roles = [role];
       ctx.session.user = {
         id: user.id,
         roles,
