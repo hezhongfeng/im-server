@@ -4,6 +4,8 @@
 
 现已部署上线，欢迎体验[客户端](https://im-client.hezf.online/)和[管理端](https://im-admin.hezf.online/)
 
+**请不要随意更改默认角色和权限，请有点爱心，别整一些很不文明的名字**
+
 ## 介绍
 
 使用 egg 框架，IM 服务的服务端
