@@ -20,7 +20,7 @@
     "cz": "git-cz"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "egg": "^2.26.0",
     "egg-bin": "^4.14.1",
     "egg-passport": "^2.1.1",
