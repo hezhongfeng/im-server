@@ -30,7 +30,7 @@
     "egg-sequelize": "^5.2.1",
     "egg-socket.io": "^4.1.6",
     "egg-validate": "^2.0.2",
-    "mysql2": "^2.1.0",
+    "mysql2": "^3.9.8",
     "nodemailer": "^6.4.16"
   },
   "devDependencies": {
